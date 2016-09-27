@@ -6,7 +6,15 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
+    "novel-parser": "file:///Users/zy/Workspaces/novel-parser",
+    "buffer": "^5.0.0",
+    "events": "^1.1.1",
     "react": "15.3.2",
-    "react-native": "0.34.0"
+    "react-native": "0.34.0",
+    "react-native-router-flux": "^3.35.0",
+    "react-native-spinkit": "^0.1.3",
+    "react-native-vector-icons": "^2.1.0",
+    "realm": "^0.14.3",
+    "stream": "0.0.2"
   }
 }
