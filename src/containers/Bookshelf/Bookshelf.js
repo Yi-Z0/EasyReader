@@ -1,11 +1,11 @@
 //@flow
 import React from 'react';
-import {View,Text,TouchableWithoutFeedback,ListView} from 'react-native';
+import {View,Text,TouchableWithoutFeedback} from 'react-native';
 
 import {Actions} from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-// import {Novel} from 'novel-parser';
+import { ListView } from 'realm/react-native';
 
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 export default class Bookshelf extends React.Component {
@@ -22,14 +22,51 @@ export default class Bookshelf extends React.Component {
       </TouchableWithoutFeedback>
     )
   }
+  
+  constructor(props){
+    super(props);
+    this.realm = realmFactory();
+    this.state = {
+      novels: ds.cloneWithRows(this.realm.objects('Novel')),
+    };
+    this.realm.addListener('change', () => {
+      this.setState({
+        novels:ds.cloneWithRows(this.realm.objects('Novel')),
+      })
+    });
+  }
+  
+  componentWillUnmount(){
+    this.realm.removeAllListeners();
+  }
 
+  handleNewData=()=>{
+    this.realm.write(() => {
+     this.realm.create('Novel', {
+       title:'title',
+       directoryUrl:'directoryUrl'+Date.now(),
+       isParseDirectory:false,
+       logo:'logo',
+       directory:[],
+       author:'author',
+       desc:'desc',
+       score:99,
+     });
+    });
+  }
   render() {
     return (
       <View style={{
         flex: 1,
         marginTop:64
       }}>
-      <Text>123</Text>
+      <Text onPress={this.handleNewData}>新增数据</Text>
+      
+      <ListView
+        enableEmptySections={true}
+        dataSource={this.state.novels}
+        renderRow={(rowData) => <Text>{rowData.directoryUrl}</Text>}
+      />
       </View>
     );
   }

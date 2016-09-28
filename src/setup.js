@@ -1,7 +1,7 @@
 //@flow
 import React from 'react';
 import { Scene,Router } from 'react-native-router-flux';
-
+require('./db');
 
 import {Bookshelf,Search} from './containers';
 

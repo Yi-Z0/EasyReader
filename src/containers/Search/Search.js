@@ -4,6 +4,9 @@ import {View,Text,ListView} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 
+import {Master} from 'novel-parser';
+import rules from '../../rules';
+
 import Form from './components/Form';
 import List from './components/List';
 
@@ -18,6 +21,7 @@ export default class Search extends React.Component {
     searching: boolean,
     error: string,
     novels:Novel[],
+    keywords:string,
   };
 
   constructor(props:Props) {
@@ -26,11 +30,35 @@ export default class Search extends React.Component {
       searching:false,
       error:'',
       novels:[],
+      keywords:'',
     };
   }
   
   handleSearch = (keywords:string)=>{
-    console.log(keywords);
+    this.setState({
+      searching:true,
+      novels:[],
+      error:'',
+      keywords
+    });
+    
+    let master = new Master(rules);
+
+    master.search(keywords,(novel)=>{
+      if (keywords == this.state.keywords) {
+        this.setState({
+          searching:false,
+          novels:[...this.state.novels,novel]
+        });
+      }
+    }).then((data)=>{
+      console.log('finished');
+    }).catch((error)=>{
+      this.setState({
+        searching:false,
+        error
+      });
+    });
   }
   
   render() {
