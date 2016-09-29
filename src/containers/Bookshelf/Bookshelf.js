@@ -7,8 +7,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import { ListView } from 'realm/react-native';
 
+type Props = {
+  
+};
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 export default class Bookshelf extends React.Component {
+  realm:Realm;
+  props: Props;
+  state: {
+    novels:Novel[],
+  };
+  
   static renderSearchBTN(){
     return (
       <TouchableWithoutFeedback  onPress={e=>{
@@ -23,7 +32,7 @@ export default class Bookshelf extends React.Component {
     )
   }
   
-  constructor(props){
+  constructor(props:Props){
     super(props);
     this.realm = realmFactory();
     this.state = {

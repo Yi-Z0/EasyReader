@@ -1,7 +1,7 @@
 //@flow
 import React from 'react';
-import {View,Text,ListView} from 'react-native';
-import {Actions} from 'react-native-router-flux';
+import {View,ListView} from 'react-native';
+// import { ListView } from 'realm/react-native';
 import Spinner from 'react-native-spinkit';
 
 import {Master} from 'novel-parser';

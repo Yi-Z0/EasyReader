@@ -11,7 +11,8 @@ export default class Item extends React.Component {
   };
   
   handleClick = (e:Event)=>{
-    Actions.profile({novel:this.props.novel})
+    //save novel to realm and redirect when save success
+    Actions.directory({novel:this.props.novel})
   };
   
   render() {
