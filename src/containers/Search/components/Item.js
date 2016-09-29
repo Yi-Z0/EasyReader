@@ -1,7 +1,6 @@
 //@flow
 'use strict';
 import React from 'react';
-import type {Novel} from 'novel-parser';
 import {TouchableHighlight,Text,View} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 
@@ -11,8 +10,27 @@ export default class Item extends React.Component {
   };
   
   handleClick = (e:Event)=>{
-    //save novel to realm and redirect when save success
-    Actions.directory({novel:this.props.novel})
+    let realm = realmFactory();
+    realm.write(()=>{
+      let novel = null;
+      let novels = realm.objects('Novel').filtered(`directoryUrl="${this.props.novel.directoryUrl}"`);
+      if(novels.length == 0){
+        novel = realm.create('Novel', {
+          title:this.props.novel.title,
+          directoryUrl:this.props.novel.directoryUrl,
+          isParseDirectory:this.props.novel.isParseDirectory,
+          logo:this.props.novel.logo,
+          directory:[],
+          author:this.props.novel.author,
+          desc:this.props.novel.desc,
+          created:new Date()
+        });
+      }else{
+        novel = novels[0];
+      }
+      //save novel to realm and redirect when save success
+      Actions.directory({novel:novel})
+    });
   };
   
   render() {

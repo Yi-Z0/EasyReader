@@ -29,7 +29,7 @@
 [libs]
 node_modules/react-native/Libraries/react-native/react-native-interface.js
 node_modules/react-native/flow
-flow/
+flow/types.js
 node_modules/novel-parser/flow
 
 [options]

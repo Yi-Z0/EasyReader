@@ -1,3 +1,4 @@
+import {parseArticleContent} from 'novel-parser';
 export default class Article {
   static schema = {
     name: 'Article',

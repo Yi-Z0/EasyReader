@@ -1,3 +1,9 @@
+import parse from 'url-parse';
+
+import {getArticlesFromUrl} from 'novel-parser';
+
+import rules from '../rules';
+
 export default class Novel {
   static schema = {
     name: 'Novel',
@@ -14,4 +20,20 @@ export default class Novel {
       created:'date',
     }
   }
+}
+
+function getRule(url:string):Rule|null{
+  let urlObject = parse(url);
+  let domain = urlObject.hostname;
+  for(var rule of rules){
+    if (rule.domain == domain) {
+      return rule;
+    }
+  }
+  return null;
+}
+
+export const parseDirectory = async (novel:Novel)=>{
+  let articles =  await getArticlesFromUrl(novel.directoryUrl,getRule(novel.directoryUrl));
+  return articles;
 }
