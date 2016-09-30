@@ -76,9 +76,6 @@ export default class Directory extends React.Component {
     return ds.cloneWithRows(directoryCopy);
   }
   
-  handleClick(id:number){
-  }
-  
   handleSwitchStar = ()=>{
     this.realm.write(()=>{
       this.props.novel.star = !this.props.novel.star;
@@ -92,6 +89,13 @@ export default class Directory extends React.Component {
       desc,
       dataSource:this.getDataSource(null,desc)
     });
+  }
+  
+  handleClickArticle = (article:Article,index:number)=>{
+      Actions.reader({
+        directory:this.state.directory,
+        index
+      })
   }
   
   render() {
@@ -117,8 +121,9 @@ export default class Directory extends React.Component {
             dataSource={this.state.dataSource}
             renderRow={(rowData,sectionID,rowID) => {
               return <ListItem
-                  key={sectionID}
+                  key={rowData.url}
                   title={rowData.title}
+                  onPress={this.handleClickArticle.bind(null,rowData,rowID)}
                 />;
             }}
           />;
