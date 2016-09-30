@@ -9,7 +9,6 @@ import {
   TextInput
 } from 'react-native';
 import dismissKeyboard from 'dismissKeyboard';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 export default class Form extends Component {
   props: {
@@ -32,10 +31,6 @@ export default class Form extends Component {
           borderRadius: 6,
           overflow:'hidden'
         }}>
-          <Icon style={{
-            paddingHorizontal:10,
-            paddingTop:2,
-          }} size={25} name="ios-search-outline" color="#aaaaaa"/>
           <TextInput style = {{
               height: 30,
               borderWidth: 0,

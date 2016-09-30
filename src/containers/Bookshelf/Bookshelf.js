@@ -3,7 +3,6 @@ import React from 'react';
 import {View,Text,TouchableWithoutFeedback} from 'react-native';
 
 import {Actions} from 'react-native-router-flux';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 import { ListView } from 'realm/react-native';
 
@@ -23,11 +22,7 @@ export default class Bookshelf extends React.Component {
       <TouchableWithoutFeedback  onPress={e=>{
         Actions.search();
       }}>
-        <Icon style={{
-          position:'absolute',
-          right:10,
-          bottom:10
-        }} size={25} name="ios-search-outline" color="#666666"/>
+        <Text>Search</Text>
       </TouchableWithoutFeedback>
     )
   }
@@ -50,18 +45,7 @@ export default class Bookshelf extends React.Component {
   }
 
   handleNewData=()=>{
-    this.realm.write(() => {
-     this.realm.create('Novel', {
-       title:'title',
-       directoryUrl:'directoryUrl'+Date.now(),
-       isParseDirectory:false,
-       logo:'logo',
-       directory:[],
-       author:'author',
-       desc:'desc',
-       score:99,
-     });
-    });
+    
   }
   render() {
     return (
@@ -69,7 +53,7 @@ export default class Bookshelf extends React.Component {
         flex: 1,
         marginTop:64
       }}>
-      {/* <Text onPress={this.handleNewData}>新增数据</Text> */}
+      <Text onPress={this.handleNewData}>DOOOOOO</Text>
       
       <ListView
         enableEmptySections={true}

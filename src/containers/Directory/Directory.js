@@ -4,11 +4,12 @@ import {View,Text,ListView} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 
-import {parseDirectory} from '../../models/Novel';
+import {getArticlesFromUrl} from '../../parser';
 import Row from './Components/Row';
 
 type Props = {
   novel:Novel,
+  navigationState:any,
 };
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.url != r2.url});
 
@@ -34,6 +35,7 @@ export default class Directory extends React.Component {
   }
   
   componentWillMount() {
+    this.props.navigationState.title = this.props.novel.title;
     if (this.props.novel.isParseDirectory) {
       this.setState({
         fetching:false,
@@ -41,7 +43,7 @@ export default class Directory extends React.Component {
       });
     }
     
-    parseDirectory(this.props.novel).then((directory)=>{
+    getArticlesFromUrl(this.props.novel.directoryUrl).then((directory)=>{
       this.realm.write(()=>{
         this.props.novel.directory = JSON.stringify(directory);
         this.props.novel.isParseDirectory = true;

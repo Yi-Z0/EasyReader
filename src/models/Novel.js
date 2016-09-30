@@ -18,8 +18,3 @@ export default class Novel {
     }
   }
 }
-
-export const parseDirectory = async (novel:Novel)=>{
-  let articles =  await getArticlesFromUrl(novel.directoryUrl);
-  return articles;
-}
