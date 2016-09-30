@@ -1,8 +1,10 @@
 //@flow
 import React from 'react';
-import {View,Text,TouchableWithoutFeedback} from 'react-native';
-
+import {View,TouchableWithoutFeedback} from 'react-native';
+import { ListItem } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {Actions} from 'react-native-router-flux';
+import { Container, Navbar } from 'navbar-native';
 
 import { ListView } from 'realm/react-native';
 
@@ -14,28 +16,18 @@ export default class Bookshelf extends React.Component {
   realm:Realm;
   props: Props;
   state: {
-    novels:Novel[],
+    dataSource:ListView.DataSource,
   };
-  
-  static renderSearchBTN(){
-    return (
-      <TouchableWithoutFeedback  onPress={e=>{
-        Actions.search();
-      }}>
-        <Text>Search</Text>
-      </TouchableWithoutFeedback>
-    )
-  }
   
   constructor(props:Props){
     super(props);
     this.realm = realmFactory();
     this.state = {
-      novels: ds.cloneWithRows(this.realm.objects('Novel')),
+      dataSource: ds.cloneWithRows(this.realm.objects('Novel')),
     };
     this.realm.addListener('change', () => {
       this.setState({
-        novels:ds.cloneWithRows(this.realm.objects('Novel')),
+        dataSource:ds.cloneWithRows(this.realm.objects('Novel')),
       })
     });
   }
@@ -44,27 +36,31 @@ export default class Bookshelf extends React.Component {
     this.realm.removeAllListeners();
   }
 
-  handleNewData=()=>{
-    
-  }
   render() {
     return (
-      <View style={{
-        flex: 1,
-        marginTop:64
-      }}>
-      <Text onPress={this.handleNewData}>DOOOOOO</Text>
-      
-      <ListView
-        enableEmptySections={true}
-        dataSource={this.state.novels}
-        renderRow={(rowData) => <Text onPress={e=>{
-          Actions.directory({novel:rowData})
-        }} style={{
-          marginVertical:10
-        }}>{rowData.title}</Text>}
-      />
-      </View>
+      <Container>
+          <Navbar
+              title="易读小说"
+              right={{
+                  icon: 'ios-search',
+                  iconSize: 20,
+                  onPress: Actions.search
+              }}
+          />
+          <ListView
+            enableEmptySections={true}
+            dataSource={this.state.dataSource}
+            renderRow={(rowData,sectionID,rowID) => {
+              return <ListItem
+                  onPress={e=>{
+                    Actions.directory({novel:rowData})
+                  }}
+                  key={sectionID}
+                  title={rowData.title}
+                />;
+            }}
+          />
+      </Container>
     );
   }
 

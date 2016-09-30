@@ -1,12 +1,14 @@
 //@flow
 import React from 'react';
 import {View,ListView} from 'react-native';
-// import { ListView } from 'realm/react-native';
+import { Container, Navbar } from 'navbar-native';
+import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
+import dismissKeyboard from 'dismissKeyboard';
 
 import {Master} from '../../parser';
 
-import Form from './components/Form';
+import { SearchBar } from 'react-native-elements'
 import List from './components/List';
 
 type Props = {
@@ -33,7 +35,12 @@ export default class Search extends React.Component {
     };
   }
   
-  handleSearch = (keywords:string)=>{
+  keywords = '';
+  handleChangeKeyword = (s:string)=>this.keywords=s;
+  
+  handleSearch = ()=>{
+    dismissKeyboard();
+    let keywords = this.keywords;
     this.setState({
       searching:true,
       novels:[],
@@ -87,13 +94,25 @@ export default class Search extends React.Component {
     }
     
     return (
-      <View style={{
-        flex: 1,
-        marginTop:64
-      }}>
-      <Form onSubmit={this.handleSearch}/>
-      {content}
-      </View>
+        <Container>
+            <Navbar
+                title="搜索"
+                left={{
+                    icon: "ios-arrow-back",
+                    label: "返回",
+                    onPress: Actions.pop
+                }}
+            />
+            <SearchBar
+            lightTheme
+            round
+            onSubmitEditing={this.handleSearch.bind(this)}
+            onChangeText={this.handleChangeKeyword.bind(this)}
+            textInputRef="keywords"
+            placeholder='输入书名,作者,主角等进行搜索' />
+            
+            {content}
+        </Container>
     );
   }
 

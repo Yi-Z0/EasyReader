@@ -1,12 +1,12 @@
 //@flow
 import React from 'react';
-import {View,Text,ListView} from 'react-native';
+import {View,Text,ListView,ScrollView} from 'react-native';
+import { ListItem } from 'react-native-elements'
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
 
 import {getArticlesFromUrl} from '../../parser';
-import Row from './Components/Row';
 
 type Props = {
   novel:Novel,
@@ -21,6 +21,7 @@ export default class Directory extends React.Component {
     fetching: bool,
     error:string,
     dataSource:any,
+    directory:array<Article>,
     desc:bool,
   };
 
@@ -30,40 +31,67 @@ export default class Directory extends React.Component {
       fetching:true,
       error:'',
       dataSource:null,
+      directory:[],
       desc:false
     };
     this.realm = realmFactory();
   }
   
   componentWillMount() {
-    this.props.navigationState.title = this.props.novel.title;
     if (this.props.novel.isParseDirectory) {
+      let directory = JSON.parse(this.props.novel.directory);
       this.setState({
         fetching:false,
-        dataSource:ds.cloneWithRows(JSON.parse(this.props.novel.directory)),
+        dataSource:this.getDataSource(directory),
+        directory
       });
-    }
-    
+    }  
+  }
+  componentDidMount() {
     getArticlesFromUrl(this.props.novel.directoryUrl).then((directory)=>{
       this.realm.write(()=>{
         this.props.novel.directory = JSON.stringify(directory);
         this.props.novel.isParseDirectory = true;
         this._isMounted && this.setState({
           fetching:false,
-          dataSource:ds.cloneWithRows(directory),
+          dataSource:this.getDataSource(directory),
+          directory
         });
       });
     })
-      
+  }
+  
+  getDataSource(directory:array<Article>=null,desc:bool|null=null){
+    if(directory==null){
+      directory = this.state.directory;
+    }
+    let directoryCopy = [...directory];
+    if(desc == null){
+      desc = this.state.desc
+    }
+    
+    if(desc){
+      directoryCopy.reverse();
+    }
+    return ds.cloneWithRows(directoryCopy);
   }
   
   handleClick(id:number){
-    console.log(id);
   }
   
-  _isMounted = true;
-  componentWillUnmount() {
-    this._isMounted = false;
+  handleSwitchStar = ()=>{
+    this.realm.write(()=>{
+      this.props.novel.star = !this.props.novel.star;
+      this.forceUpdate();
+    });
+  }
+  
+  handleSwitchOrder = ()=>{
+    let desc = !this.state.desc;
+    this.setState({
+      desc,
+      dataSource:this.getDataSource(null,desc)
+    });
   }
   
   render() {
@@ -84,36 +112,54 @@ export default class Directory extends React.Component {
       />
       </View>;
     }else{
-      content = <ListView
-        dataSource={this.state.dataSource}
-        renderRow={(rowData,sectionID,rowID) => {
-            return <Row onPress={this.handleClick} {...rowData} id={rowID}/>;
-        }}
-      />;
+      content = 
+          <ListView
+            dataSource={this.state.dataSource}
+            renderRow={(rowData,sectionID,rowID) => {
+              return <ListItem
+                  key={sectionID}
+                  title={rowData.title}
+                />;
+            }}
+          />;
     }
     
+    let arrowLabel = '正序';
+    if(this.state.desc){
+      arrowLabel = '逆序';
+    }
+    
+    let starIcon = "star-o";
+    if(this.props.novel.star){
+      starIcon = "star";
+    }
     return (
       <Container>
           <Navbar
-              title={"Navbar Native"}
+              title={this.props.novel.title}
               left={{
                   icon: "ios-arrow-back",
-                  label: "Back",
-                  onPress: () => {
-                    Actions.pop();
-                  }
+                  label: "返回",
+                  onPress: Actions.pop
               }}
               right={[{
-                  icon: "ios-search",
-                  onPress: () => {alert('Search!')}
+                  icon: starIcon,
+                  iconFamily: "FontAwesome",
+                  iconSize: 20,
+                  onPress: this.handleSwitchStar
               },{
-                  icon: "ios-menu",
-                  onPress: () => {alert('Toggle menu!')}
+                  label: arrowLabel,
+                  onPress: this.handleSwitchOrder
               }]}
           />
           {content}
       </Container>
     );
+  }
+  
+  _isMounted = true;
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
 }

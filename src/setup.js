@@ -10,10 +10,10 @@ class App extends React.Component {
     this.setState
     return (
        <Router>
-          <Scene key="root">
-            <Scene key="bookshelf" component={Bookshelf} title="我的书架" renderRightButton={Bookshelf.renderSearchBTN}/>
+          <Scene hideNavBar key="root">
+            <Scene key="bookshelf" component={Bookshelf} title="我的书架"/>
             <Scene key="search" component={Search} title="搜索"/>
-            <Scene key="directory" component={Directory} hideNavBar title="目录"/>
+            <Scene key="directory" component={Directory} title="目录"/>
             {/*
             <Scene key="profile" component={Profile} />
             <Scene key="reader" component={Reader} />
