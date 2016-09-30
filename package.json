@@ -10,6 +10,7 @@
     "cheerio": "^0.22.0",
     "events": "^1.1.1",
     "iconv-lite": "^0.4.13",
+    "navbar-native": "^1.4.7",
     "react": "15.3.2",
     "react-native": "0.34.0",
     "react-native-elements": "^0.6.0",

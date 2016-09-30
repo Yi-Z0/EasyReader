@@ -3,6 +3,7 @@ import React from 'react';
 import {View,Text,ListView} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
+import { Container, Navbar } from 'navbar-native';
 
 import {getArticlesFromUrl} from '../../parser';
 import Row from './Components/Row';
@@ -92,12 +93,26 @@ export default class Directory extends React.Component {
     }
     
     return (
-      <View style={{
-        flex: 1,
-        marginTop:64
-      }}>
-      {content}
-      </View>
+      <Container>
+          <Navbar
+              title={"Navbar Native"}
+              left={{
+                  icon: "ios-arrow-back",
+                  label: "Back",
+                  onPress: () => {
+                    Actions.pop();
+                  }
+              }}
+              right={[{
+                  icon: "ios-search",
+                  onPress: () => {alert('Search!')}
+              },{
+                  icon: "ios-menu",
+                  onPress: () => {alert('Toggle menu!')}
+              }]}
+          />
+          {content}
+      </Container>
     );
   }
 
