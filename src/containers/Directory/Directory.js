@@ -1,12 +1,11 @@
 //@flow
 import React from 'react';
-import {View,Text} from 'react-native';
-import { ListView } from 'realm/react-native';
+import {View,Text,ListView} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 
-import rules from '../../rules';
 import {parseDirectory} from '../../models/Novel';
+import Row from './Components/Row';
 
 type Props = {
   novel:Novel,
@@ -17,42 +16,51 @@ export default class Directory extends React.Component {
   realm:Realm;
   props: Props;
   state: {
-    fetching: boolean,
+    fetching: bool,
     error:string,
+    dataSource:any,
+    desc:bool,
   };
 
   constructor(props:Props) {
     super(props);
     this.state = {
-      fetching:false,
+      fetching:true,
       error:'',
+      dataSource:null,
+      desc:false
     };
     this.realm = realmFactory();
   }
   
   componentWillMount() {
-    if (!this.props.novel.isParseDirectory) {
+    if (this.props.novel.isParseDirectory) {
       this.setState({
-        fetching:true
+        fetching:false,
+        dataSource:ds.cloneWithRows(JSON.parse(this.props.novel.directory)),
       });
-      // let articles = this.props.novel.parseDirectory();
-      // console.log(2,articles);
     }
     
-    parseDirectory(this.props.novel).then((articles)=>{
+    parseDirectory(this.props.novel).then((directory)=>{
       this.realm.write(()=>{
-        for(var article of articles){
-          if(!this.props.novel.isParseDirectory || this.realm.objects('Article').filtered(`url="${article.url}"`).length == 0){
-            this.props.novel.directory.push(article);
-          }
-        }
+        this.props.novel.directory = JSON.stringify(directory);
         this.props.novel.isParseDirectory = true;
-        this.setState({
-          fetching:false
+        this._isMounted && this.setState({
+          fetching:false,
+          dataSource:ds.cloneWithRows(directory),
         });
       });
     })
       
+  }
+  
+  handleClick(id:number){
+    console.log(id);
+  }
+  
+  _isMounted = true;
+  componentWillUnmount() {
+    this._isMounted = false;
   }
   
   render() {
@@ -73,7 +81,12 @@ export default class Directory extends React.Component {
       />
       </View>;
     }else{
-      // content = <List ds={ds.cloneWithRows(this.state.novels)}/>;
+      content = <ListView
+        dataSource={this.state.dataSource}
+        renderRow={(rowData,sectionID,rowID) => {
+            return <Row onPress={this.handleClick} {...rowData} id={rowID}/>;
+        }}
+      />;
     }
     
     return (

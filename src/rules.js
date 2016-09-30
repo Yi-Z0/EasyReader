@@ -1,6 +1,9 @@
-export default  [
+import parse from 'url-parse';
+
+const rules = [
   {
     domain: `www.23wx.com`,
+    encode:'gbk',
     //工作在搜索引擎提取的url中
     directoryUrlRegexp: /^\/html\/\d+\/\d+\/?(index\.html)?$/,
     //工作在搜索引擎提取页面
@@ -14,6 +17,7 @@ export default  [
   },
   {
     domain: `www.bxwx8.org`,
+    encode:'gbk',
     //工作在搜索引擎提取的url中
     directoryUrlRegexp: /^\/b\/\d+\/\d+\/?(index\.html)?$/,
     //工作在搜索引擎提取页面
@@ -59,6 +63,7 @@ export default  [
   },
   {
     domain: `www.biquge.tw`,
+    encode:'utf8',
     //工作在搜索引擎提取的url中
     directoryUrlRegexp: /^\/\d+_\d+\/?(index\.html)?$/,
     //工作在搜索引擎提取页面
@@ -71,3 +76,15 @@ export default  [
     articleContentRule: $=>$("#content").text().replace('readx();&nbsp;&nbsp;&nbsp;&nbsp;',''),
   },
 ];
+export default rules;
+
+export function getRuleByUrl(url:string):Rule|null{
+  let urlObject = parse(url);
+  let domain = urlObject.hostname;
+  for(var rule of rules){
+    if (rule.domain == domain) {
+      return rule;
+    }
+  }
+  return null;
+}

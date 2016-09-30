@@ -20,7 +20,7 @@ export default class Item extends React.Component {
           directoryUrl:this.props.novel.directoryUrl,
           isParseDirectory:this.props.novel.isParseDirectory,
           logo:this.props.novel.logo,
-          directory:[],
+          directory:'[]',
           author:this.props.novel.author,
           desc:this.props.novel.desc,
           created:new Date()

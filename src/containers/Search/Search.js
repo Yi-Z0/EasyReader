@@ -4,8 +4,7 @@ import {View,ListView} from 'react-native';
 // import { ListView } from 'realm/react-native';
 import Spinner from 'react-native-spinkit';
 
-import {Master} from 'novel-parser';
-import rules from '../../rules';
+import {Master} from '../../parser';
 
 import Form from './components/Form';
 import List from './components/List';
@@ -42,11 +41,12 @@ export default class Search extends React.Component {
       keywords
     });
     
-    let master = new Master(rules);
-
+    let master = new Master();
+    
     master.search(keywords,(novel)=>{
+      //TODO check this is mount before setState
       if (keywords == this.state.keywords) {
-        this.setState({
+        this._isMounted && this.setState({
           searching:false,
           novels:[...this.state.novels,novel]
         });
@@ -54,11 +54,16 @@ export default class Search extends React.Component {
     }).then((data)=>{
       console.log('finished');
     }).catch((error)=>{
-      this.setState({
+      this._isMounted && this.setState({
         searching:false,
         error
       });
     });
+  }
+  
+  _isMounted = true;
+  componentWillUnmount() {
+    this._isMounted = false;
   }
   
   render() {

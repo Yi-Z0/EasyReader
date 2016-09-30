@@ -7,7 +7,7 @@ import {Bookshelf,Search,Directory} from './containers';
 
 class App extends React.Component {
   render() {
-    
+    this.setState
     return (
        <Router>
           <Scene key="root">

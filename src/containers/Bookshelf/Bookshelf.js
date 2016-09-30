@@ -69,12 +69,16 @@ export default class Bookshelf extends React.Component {
         flex: 1,
         marginTop:64
       }}>
-      <Text onPress={this.handleNewData}>新增数据</Text>
+      {/* <Text onPress={this.handleNewData}>新增数据</Text> */}
       
       <ListView
         enableEmptySections={true}
         dataSource={this.state.novels}
-        renderRow={(rowData) => <Text>{rowData.directoryUrl}</Text>}
+        renderRow={(rowData) => <Text onPress={e=>{
+          Actions.directory({novel:rowData})
+        }} style={{
+          marginVertical:10
+        }}>{rowData.title}</Text>}
       />
       </View>
     );
