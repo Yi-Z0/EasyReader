@@ -15,6 +15,7 @@ export default class Novel {
       desc:'string', //描述内容
       star:{type: 'bool', default: false},
       created:'date',
+      lastReadIndex:'int'
     }
   }
 }
