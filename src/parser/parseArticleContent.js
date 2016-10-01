@@ -1,17 +1,16 @@
 import crawler from './crawler';
-export default async function parseArticleContent(article:Article,rule:domTextRule,retry:number = 3):Promise<string> {
- if (article.full) {
-   return article.content;
- }
- 
- let $:cheerio = await crawler(article.url);
- 
- article.content = rule($);
+import {getRuleByUrl} from '../rules';
 
- if (article.content.length<5 && retry>0) {
-   return parseArticleContent(article,rule,retry-1);
+export default async function parseArticleContent(url:string,retry:number = 3):Promise<string> {
+ 
+ let rule = getRuleByUrl(url);
+ let $:cheerio = await crawler(url);
+ 
+ let content = rule.articleContentRule($);
+
+ if (content.length<5 && retry>0) {
+   return parseArticleContent(url,retry-1);
  }
  
- article.full = true;
- return article.content;
+ return content;
 }

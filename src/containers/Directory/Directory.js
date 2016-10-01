@@ -94,6 +94,7 @@ export default class Directory extends React.Component {
   handleClickArticle = (article:Article,index:number)=>{
       Actions.reader({
         directory:this.state.directory,
+        directoryUrl:this.props.novel.directoryUrl,
         index
       })
   }
