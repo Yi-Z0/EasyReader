@@ -74,6 +74,7 @@ function fetchUrl(url: string): Promise < cheerio > {
         {
           referrer: url,
           userAgent: getRandomAgent(),
+          'RNFB-Response' : 'base64'
         }
      ).then(res => {
       //  alert(res._bodyBlob);
@@ -81,8 +82,12 @@ function fetchUrl(url: string): Promise < cheerio > {
        return res.base64();
      }).then(str => {
        let rule = getRuleByUrl(url);
+       let encode = 'utf8';
+       if (rule&&rule.encode) {
+         encode = rule.encode;
+       }
        let buf = Buffer.from(str,'base64');
-       let html = iconv.decode(buf, rule.encode);
+       let html = iconv.decode(buf, encode);
        return cheerio.load(html);
      }).then($ => {
        resolve($);
