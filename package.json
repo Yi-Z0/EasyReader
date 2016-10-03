@@ -16,6 +16,7 @@
     "react-native-elements": "^0.6.0",
     "react-native-fetch-blob": "^0.9.6",
     "react-native-router-flux": "^3.35.0",
+    "react-native-sglistview": "^0.3.2",
     "react-native-spinkit": "^0.1.3",
     "react-native-vector-icons": "^2.1.0",
     "realm": "^0.14.3",

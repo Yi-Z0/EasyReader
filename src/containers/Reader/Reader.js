@@ -35,7 +35,9 @@ export default class Reader extends React.Component {
     if (current) {
       
       return (
-        <Container>
+        <Container style={{
+          backgroundColor:'#9FB2A1'
+        }}>
         <Navbar
         title={current.title}
         left={{
@@ -50,7 +52,6 @@ export default class Reader extends React.Component {
           })
         }}
         />
-        <ScrollView backgroundColor='#9FB2A1'>
         <Article refetch={this.state.refetch} directoryUrl={this.props.directoryUrl} url={current.url} />
         <View style={{
           flex: 1,
@@ -69,7 +70,6 @@ export default class Reader extends React.Component {
           index:this.state.index+1
         })}>下一章</Text>
         </View>
-        </ScrollView>
         </Container>
       );
     }else{

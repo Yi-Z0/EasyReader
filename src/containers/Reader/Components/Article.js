@@ -2,7 +2,7 @@
 import React from 'react';
 import {View,Text,ListView} from 'react-native';
 import Spinner from 'react-native-spinkit';
-
+import SGListView from 'react-native-sglistview';
 import {parseArticleContent} from '../../../parser';
 
 type Props = {
@@ -67,7 +67,12 @@ class Article extends React.Component {
       </View>;
     }else{
       //将内容分成多个数组来显示
-      content = <ListView
+      content = <SGListView
+        initialListSize={10000}
+        stickyHeaderIndices={[]}
+        onEndReachedThreshold={1}
+        scrollRenderAheadDistance={1}
+        pageSize={1}
         dataSource={this.state.dataSource}
         renderRow={(rowData) => <Text style={{
           fontSize:20,
