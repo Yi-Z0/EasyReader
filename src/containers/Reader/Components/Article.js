@@ -68,15 +68,15 @@ class Article extends React.Component {
     }else{
       //将内容分成多个数组来显示
       content = <SGListView
-        initialListSize={10000}
+        initialListSize={10}
         stickyHeaderIndices={[]}
         onEndReachedThreshold={1}
         scrollRenderAheadDistance={1}
         pageSize={1}
         dataSource={this.state.dataSource}
         renderRow={(rowData) => <Text style={{
-          fontSize:20,
-          lineHeight:30,
+          fontSize:25,
+          lineHeight:35,
         }}>{rowData}</Text>}
       />
     }

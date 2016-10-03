@@ -1,6 +1,6 @@
 //@flow
 import React from 'react';
-import {View,Text,ScrollView} from 'react-native';
+import {View,Text} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import { Container, Navbar } from 'navbar-native';
 
@@ -50,6 +50,9 @@ export default class Reader extends React.Component {
           onPress: e=>this.setState({
             refetch:this.state.refetch+1
           })
+        }}
+        style={{
+          marginTop:-6
         }}
         />
         <Article refetch={this.state.refetch} directoryUrl={this.props.directoryUrl} url={current.url} />
