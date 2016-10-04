@@ -23,6 +23,7 @@ export default class Directory extends React.Component {
     dataSource:any,
     directory:array<Article>,
     desc:bool,
+    lastReadArticleUrl:string,
   };
 
   constructor(props:Props) {
@@ -32,7 +33,8 @@ export default class Directory extends React.Component {
       error:'',
       dataSource:null,
       directory:[],
-      desc:false
+      desc:false,
+      lastReadArticleUrl:''
     };
     this.realm = realmFactory();
   }
@@ -43,7 +45,8 @@ export default class Directory extends React.Component {
       this.setState({
         fetching:false,
         dataSource:this.getDataSource(directory),
-        directory
+        directory,
+        lastReadArticleUrl:directory[this.props.novel.lastReadIndex].url
       });
     }  
   }
@@ -55,10 +58,14 @@ export default class Directory extends React.Component {
         this._isMounted && this.setState({
           fetching:false,
           dataSource:this.getDataSource(directory),
-          directory
+          directory,
+          lastReadArticleUrl:directory[this.props.novel.lastReadIndex].url
         });
       });
-    })
+    });
+    if(this._scrollView){
+      this._scrollView.scrollTo({y:this.props.novel.lastReadIndex*49});
+    }
   }
   
   getDataSource(directory:array<Article>=null,desc:bool|null=null){
@@ -91,14 +98,28 @@ export default class Directory extends React.Component {
     });
   }
   
-  handleClickArticle = (article:Article,index:number)=>{
+  handleClickArticle = (article:Article,rowIndex:number)=>{
+    let index = parseInt(rowIndex);
+    if(this.state.desc){
+      index = this.state.directory.length - index -1;
+    }
+    this.realm.write(()=>{
+      this.props.novel.lastReadIndex = index;
+    });
+    this.setState({
+      lastReadArticleUrl:this.state.directory[index].url,
+      dataSource:this.getDataSource()
+    },()=>{
       Actions.reader({
+        novel:this.props.novel,
         directory:this.state.directory,
-        directoryUrl:this.props.novel.directoryUrl,
         index
-      })
+      });
+    });
+    
   }
   
+  _scrollView;
   render() {
     // this.props.novel;
     let content;
@@ -117,11 +138,18 @@ export default class Directory extends React.Component {
       />
       </View>;
     }else{
+      let lastReadArticleUrl = this.state.lastReadArticleUrl;
       content = 
           <ListView
+            ref={_scrollView=>this._scrollView=_scrollView}
             dataSource={this.state.dataSource}
             renderRow={(rowData,sectionID,rowID) => {
+              let style={};
+              if(rowData.url == lastReadArticleUrl){
+                style.color = "#FD973C";
+              }
               return <ListItem
+                  titleStyle={style}
                   key={rowData.url}
                   title={rowData.title}
                   onPress={this.handleClickArticle.bind(null,rowData,rowID)}
