@@ -1,41 +1,145 @@
 //@flow
 import React from 'react';
-import {View,Text} from 'react-native';
+import {View,Text,Dimensions,ListView,TouchableWithoutFeedback,PanResponder} from 'react-native';
 import {Actions} from 'react-native-router-flux';
+import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
+import {parseArticleContent} from '../../parser';
 
-import Article from './Components/Article';
 type Props = {
-  directory:array<Article>,
+  directory:Array<any>,
   navigationState:any,
   directoryUrl:string,
   index:number, // start
 };
 
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 export default class Reader extends React.Component {
   realm:Realm;
   props: Props;
   state: {
     index:number,//current
-    refetch:number
+    refetch:number,
+    navMargin:number,
+    fetching:bool,
+    dataSource:ListView.DataSource|null,
   };
   
-  directory:array<Article>;
+  directory:Array<any>;
   constructor(props:Props) {
     super(props);
     this.state = {
       index:parseInt(props.index),
-      refetch:0
+      refetch:0,
+      navMargin:0,
+      fetching:true,
+      dataSource:null
     };
     this.realm = realmFactory();
   }
   
+  fetchContent = (url:string)=>{
+    this._isMounted&&this.setState({
+      fetching:true
+    });
+
+    parseArticleContent(url).then((content:string)=>{
+      let rows = content.split('\r\n');
+      rows.push('');
+      rows.push('');
+      rows.push('');
+      rows.push('');
+      rows.push('');
+      this._isMounted&&this.setState({
+        fetching:false,
+        dataSource: ds.cloneWithRows(rows),
+      });
+    }).catch((e)=>{
+      console.log(e);
+    });
+  }
+  
+  componentDidMount() {
+    this.fetchContent(this.getCurrentArticle().url);
+  }
+  
+  getCurrentArticle(){
+    return this.props.directory[this.state.index];
+  }
+  
+  lastContentOffsetY = 0;
+  handleScroll=(e:Event)=>{
+    let difference = e.nativeEvent.contentOffset.y - this.lastContentOffsetY;
+    if(difference>0){
+      if(this.state.navMargin>-64){
+        let val = this.state.navMargin-difference<-64?-64:this.state.navMargin-difference;
+        this.setState({
+          navMargin:val
+        });
+      }
+    }else{
+      if(this.state.navMargin!=0){
+        let val = this.state.navMargin-difference>0?0:this.state.navMargin-difference;
+        this.setState({
+          navMargin:val
+        });
+      }
+    }
+    
+    this.lastContentOffsetY = e.nativeEvent.contentOffset.y;
+  }
+  handleEndReached=()=>{
+    this.setState({
+      navMargin:0,
+      index:this.state.index+1,
+      fetching:true,
+    },()=>{
+      this.fetchContent(this.getCurrentArticle().url);
+    });
+  }
+  
   render() {
-    let current:Article = this.props.directory[this.state.index];
+    let current = this.getCurrentArticle();
     if (current) {
       
+      let content;
+      if (this.state.fetching) {
+        content =  <View style={{
+          flex:1,
+          alignSelf:'center',
+          justifyContent:'center',
+        }} ><Spinner
+        size={100}
+        type="Pulse"
+        color="gray"
+        />
+        </View>;
+      }else{
+        var {height, width} = Dimensions.get('window');
+        //将内容分成多个数组来显示
+        content = <ListView
+          style={{
+            height,
+            padding:10,
+          }}
+          onScroll={this.handleScroll}
+          initialListSize={10}
+          onEndReachedThreshold={1}
+          scrollRenderAheadDistance={1}
+          pageSize={10}
+          onEndReached={this.handleEndReached}
+          dataSource={this.state.dataSource}
+          renderRow={(rowData) => <Text style={{
+            fontSize:25,
+            lineHeight:35,
+          }}>{rowData}</Text>}
+        />
+      }
+      
       return (
-        <Container style={{
+        <Container 
+        type="scroll"
+        style={{
           backgroundColor:'#9FB2A1'
         }}>
         <Navbar
@@ -52,27 +156,10 @@ export default class Reader extends React.Component {
           })
         }}
         style={{
-          marginTop:-6
+          marginTop:this.state.navMargin
         }}
         />
-        <Article refetch={this.state.refetch} directoryUrl={this.props.directoryUrl} url={current.url} />
-        <View style={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginTop:20,
-        }}>
-        <Text style={{
-          color: '#567BE4'
-        }} onPress={e=>this.setState({
-          index:this.state.index-1
-        })}>上一章</Text>
-        <Text style={{
-          color: '#567BE4'
-        }} onPress={e=>this.setState({
-          index:this.state.index+1
-        })}>下一章</Text>
-        </View>
+          {content}
         </Container>
       );
     }else{

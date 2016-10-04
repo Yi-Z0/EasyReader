@@ -17,6 +17,7 @@ declare type Novel = {
   desc:string,
   star:bool,
   created:Date,
+  lastReadIndex:number,
 }
 
 declare function realmFactory(): Realm;

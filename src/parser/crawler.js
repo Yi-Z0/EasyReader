@@ -19,7 +19,7 @@ event.on('NEW_TASK',(task,domain)=>{
     domainsTasks[domain] = [];
   }
   domainsTasks[domain].push(task);
-  // console.log(`${domain}新增任务`,domainsTasks[domain].length);
+  console.log(`${domain}新增任务`,domainsTasks[domain].length);
   if (!domainsTaskRuning[domain]) {
     doTask(domain);
   }
@@ -31,14 +31,14 @@ function doTask(domain){
   if (task) {
     domainsTaskRuning[domain] = true;
     task().then(($)=>{
-      // console.log(`${domain}任务完成`,domainsTasks[domain].length);
+      console.log(`${domain}任务完成`,domainsTasks[domain].length);
       setTimeout(doTask.bind(null,domain),180);
     }).catch((e)=>{
-      // console.log(`${domain}任务失败`,domainsTasks[domain].length,e);
+      console.log(`${domain}任务失败`,domainsTasks[domain].length,e);
       setTimeout(doTask.bind(null,domain),180);
     });
   }else{
-    // console.log(`${domain}任务全部完成`);
+    console.log(`${domain}任务全部完成`);
     domainsTaskRuning[domain] = false;
   }
 }
