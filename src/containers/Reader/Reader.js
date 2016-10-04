@@ -1,15 +1,17 @@
 //@flow
 import React from 'react';
-import {View,Text,Dimensions,ListView,TouchableWithoutFeedback,PanResponder} from 'react-native';
+import {View,Text,Dimensions,ListView,TouchableWithoutFeedback,PanResponder,RefreshControl} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
 import {parseArticleContent} from '../../parser';
+import { Button } from 'react-native-elements'
+
 
 type Props = {
-  directory:Array<any>,
+  novel:Novel,
   navigationState:any,
-  directoryUrl:string,
+  directory:Array<Article>,
   index:number, // start
 };
 
@@ -23,9 +25,10 @@ export default class Reader extends React.Component {
     navMargin:number,
     fetching:bool,
     dataSource:ListView.DataSource|null,
+    fontSize:number,
+    directory:Array<Article>,
   };
   
-  directory:Array<any>;
   constructor(props:Props) {
     super(props);
     this.state = {
@@ -33,25 +36,66 @@ export default class Reader extends React.Component {
       refetch:0,
       navMargin:0,
       fetching:true,
-      dataSource:null
+      dataSource:null,
+      fontSize:25,
+      directory:this.props.directory,
     };
     this.realm = realmFactory();
   }
   
-  fetchContent = (article:Article)=>{
+  fetchContent = (index:number)=>{
+    let article:Article = this.props.directory[index];
+    if(!article){
+      return;
+    }
     this._isMounted&&this.setState({
+      navMargin:0,
       fetching:true
     });
+    
+    this.realm.write(()=>{
+      this.props.novel.lastReadIndex = index;
+    })
 
     parseArticleContent(article.url).then((content:string)=>{
       let rows = content.split('\r\n');
-      // let title = (
-      //   <Text style={{
-      //     fontSize:40,
-      //     lineHeight:45,
-      //   }}>{article.title}</Text>
-      // );
-      // rows.unshift(title);
+      
+      
+      let nextBTN,beforeBTN;
+      if(this.props.directory[index+1]){
+        nextBTN=(
+          <Button
+          onPress={e=>this.fetchContent(index+1)}
+          title='下一章' />
+        );
+      }
+      if(this.props.directory[index-1]){
+        beforeBTN=(
+          <Button
+          onPress={e=>this.fetchContent(index-1)}
+          title='上一章' />
+        );
+      }
+      let btns = (<View style={{
+        flex:1,
+        flexDirection:"row",
+        justifyContent: 'space-between',
+        height:80
+      }}>
+        {beforeBTN}
+        {nextBTN}
+      </View>)
+      rows.push(btns);
+      
+      let title = (
+        <Text style={{
+          fontSize:this.state.fontSize+10,
+          lineHeight:this.state.fontSize+15,
+        }}>{article.title+"\n"}</Text>
+      );
+      rows.unshift(title);
+      rows.unshift(btns);
+      
       this._isMounted&&this.setState({
         fetching:false,
         dataSource: ds.cloneWithRows(rows),
@@ -62,48 +106,37 @@ export default class Reader extends React.Component {
   }
   
   componentDidMount() {
-    this.fetchContent(this.getCurrentArticle());
-  }
-  
-  getCurrentArticle():Article{
-    return this.props.directory[this.state.index];
+    this.fetchContent(this.state.index);
   }
   
   lastContentOffsetY = 0;
   handleScroll=(e:Event)=>{
-    let difference = e.nativeEvent.contentOffset.y - this.lastContentOffsetY;
-    if(difference>0){
-      if(this.state.navMargin>-64){
-        let val = this.state.navMargin-difference<-64?-64:this.state.navMargin-difference;
-        this.setState({
-          navMargin:val
-        });
-      }
-    }else{
-      if(this.state.navMargin!=0){
-        let val = this.state.navMargin-difference>0?0:this.state.navMargin-difference;
-        this.setState({
-          navMargin:val
-        });
+    if(e.nativeEvent.contentOffset.y>100){
+      
+      let difference = e.nativeEvent.contentOffset.y - this.lastContentOffsetY;
+      if(difference>0){
+        if(this.state.navMargin>-64){
+          let val = this.state.navMargin-difference<-64?-64:this.state.navMargin-difference;
+          this.setState({
+            navMargin:val
+          });
+        }
+      }else{
+        if(this.state.navMargin!=0){
+          let val = this.state.navMargin-difference>0?0:this.state.navMargin-difference;
+          this.setState({
+            navMargin:val
+          });
+        }
       }
     }
     
     this.lastContentOffsetY = e.nativeEvent.contentOffset.y;
   }
-  
-  //load next page
-  handleEndReached=()=>{
-    this.setState({
-      navMargin:0,
-      index:this.state.index+1,
-      fetching:true,
-    },()=>{
-      this.fetchContent(this.getCurrentArticle());
-    });
-  }
+
   
   render() {
-    let current = this.getCurrentArticle();
+    let current = this.state.directory[this.state.index];
     if (current) {
       
       let content;
@@ -123,23 +156,26 @@ export default class Reader extends React.Component {
         //将内容分成多个数组来显示
         content = <ListView
           style={{
-            height,
+            height:height-this.state.navMargin-64,
             padding:10,
             paddingBottom:50
           }}
           onScroll={this.handleScroll}
+          onEndReached={e=>{
+            this.setState({
+              navMargin:0
+            })
+          }}
           initialListSize={10}
           onEndReachedThreshold={1}
           scrollRenderAheadDistance={1}
           pageSize={10}
-          onEndReached={this.handleEndReached}
           dataSource={this.state.dataSource}
-          renderRow={(rowData) => e=>{
-            
-            if(typeof(a) == "string"){
+          renderRow={(rowData) => {
+            if(typeof(rowData) == "string"){
               let style = {
-                fontSize:25,
-                lineHeight:35,
+                fontSize:this.state.fontSize,
+                lineHeight:this.state.fontSize+5,
               };
               return <Text style={style}>{rowData}</Text>;
             }else{
@@ -158,7 +194,6 @@ export default class Reader extends React.Component {
           backgroundColor:'#9FB2A1'
         }}>
         <Navbar
-        title={current.title}
         left={{
           icon: "ios-arrow-back",
           label: "返回",

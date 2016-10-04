@@ -111,8 +111,8 @@ export default class Directory extends React.Component {
       dataSource:this.getDataSource()
     },()=>{
       Actions.reader({
+        novel:this.props.novel,
         directory:this.state.directory,
-        directoryUrl:this.props.novel.directoryUrl,
         index
       });
     });
