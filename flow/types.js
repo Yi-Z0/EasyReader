@@ -6,7 +6,7 @@ declare class Realm {
   addListener(event:string,callback:()=>void):void,
   removeAllListeners():void,
 };
-
+declare type func = ()=>void;
 declare type Novel = {
   directoryUrl:string,
   title:string,

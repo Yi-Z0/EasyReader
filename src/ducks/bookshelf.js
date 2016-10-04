@@ -3,13 +3,10 @@ import { createAction,handleActions } from 'redux-actions';
 
 const FETCH = 'novel/bookshelf/FETCH';
 
-export const fetch = createAction(FETCH, async () => {
-  const result = await somePromise;
-  return result.someValue;
+export const fetch = createAction(FETCH, () => {
+  let realm = realmFactory();
+  return realm.objects('Novel');
 });
-export const actions = {
-  fetch,
-}
 
 const initialState = {
   novels: [],
@@ -18,9 +15,7 @@ const initialState = {
 export default handleActions({
   [FETCH](state,action) {
     return {
-      ...initialState, 
-      searching: true,
-      keywords:action.payload
+      novels:action.payload
     };
   }
 }, initialState);

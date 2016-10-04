@@ -1,15 +1,17 @@
 //@flow
 import {applyMiddleware, createStore,compose} from 'redux';
 import promiseMiddleware from 'redux-promise';
+import createLogger from 'redux-logger';
+import thunk from 'redux-thunk';
 
 import {reducers} from './ducks';
-let finalCreateStore;
-
 
 const store = createStore(reducers,
   {},
-  compose(
-    promiseMiddleware
+  applyMiddleware(
+    promiseMiddleware,
+    thunk,
+    createLogger()
   )
 );
 

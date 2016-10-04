@@ -1,0 +1,60 @@
+//@flow
+import { createAction,handleActions } from 'redux-actions';
+import {Master} from '../parser';
+
+const SEARCH = 'novel/search/SEARCH';
+const FOUND_NOVEL = 'novel/search/FOUND_NOVEL';
+const FAILED = 'novel/search/FAILED';
+
+
+export const search = (keywords:string)=>{
+  return (dispatch:func) => {
+    let master = new Master();
+    
+    master.search(keywords,(novel)=>{
+      console.log(novel);
+      dispatch(foundNovel({
+        keywords,
+        novel
+      }));
+    }).then((data)=>{
+      console.log('finished');
+    }).catch((error)=>{
+      dispatch(failed(error));
+    });
+    
+    dispatch(_search(keywords));
+  };
+}
+const _search = createAction(SEARCH);
+const foundNovel = createAction(FOUND_NOVEL);
+const failed = createAction(FAILED);
+
+const initialState = {
+  novels: [],
+  searching:false,
+  error:null,
+  keywords:''
+}
+
+export default handleActions({
+  [SEARCH](state,action) {
+    return {
+      ...initialState, 
+      searching: true,
+      keywords:action.payload
+    };
+  },
+  [FOUND_NOVEL](state,action){
+    if (state.keywords == action.payload.keywords) {
+      let novels = [].concat(state.novels,[action.payload.novel]);
+      return {
+        ...state,
+        searching: false,
+        novels:novels,
+      }
+    }else{
+      return state;
+    }
+  }
+}, initialState);

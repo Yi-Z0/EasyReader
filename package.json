@@ -23,7 +23,9 @@
     "realm": "^0.14.3",
     "redux": "^3.6.0",
     "redux-actions": "^0.12.0",
+    "redux-logger": "^2.6.1",
     "redux-promise": "^0.5.3",
+    "redux-thunk": "^2.1.0",
     "stream": "0.0.2",
     "url-parse": "^1.1.3"
   },

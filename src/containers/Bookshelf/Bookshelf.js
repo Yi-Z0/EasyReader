@@ -5,37 +5,17 @@ import { ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Actions} from 'react-native-router-flux';
 import { Container, Navbar } from 'navbar-native';
-
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { ListView } from 'realm/react-native';
 
-type Props = {
-  
-};
-let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
-export default class Bookshelf extends React.Component {
-  realm:Realm;
-  props: Props;
-  state: {
-    dataSource:ListView.DataSource,
-  };
-  
-  constructor(props:Props){
-    super(props);
-    this.realm = realmFactory();
-    this.state = {
-      dataSource: ds.cloneWithRows(this.realm.objects('Novel')),
-    };
-    this.realm.addListener('change', () => {
-      this.setState({
-        dataSource:ds.cloneWithRows(this.realm.objects('Novel')),
-      })
-    });
-  }
-  
-  componentWillUnmount(){
-    this.realm.removeAllListeners();
-  }
+import {fetch} from '../../ducks/bookshelf';
 
+let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
+class Bookshelf extends React.Component {
+  componentWillMount() {
+    this.props.fetch();
+  }
   render() {
     return (
       <Container>
@@ -49,7 +29,7 @@ export default class Bookshelf extends React.Component {
           />
           <ListView
             enableEmptySections={true}
-            dataSource={this.state.dataSource}
+            dataSource={this.props.dataSource}
             renderRow={(rowData,sectionID,rowID) => {
               return <ListItem
                   onPress={e=>{
@@ -65,3 +45,20 @@ export default class Bookshelf extends React.Component {
   }
 
 }
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    dataSource: ds.cloneWithRows(state.bookshelf.novels),
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetch: bindActionCreators(fetch, dispatch)
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Bookshelf);
