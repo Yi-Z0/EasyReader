@@ -20,5 +20,10 @@ declare type Novel = {
   lastReadIndex:number,
 }
 
+declare type Article = {
+  url:string,
+  title:string,
+}
+
 declare function realmFactory(): Realm;
 

@@ -38,18 +38,20 @@ export default class Reader extends React.Component {
     this.realm = realmFactory();
   }
   
-  fetchContent = (url:string)=>{
+  fetchContent = (article:Article)=>{
     this._isMounted&&this.setState({
       fetching:true
     });
 
-    parseArticleContent(url).then((content:string)=>{
+    parseArticleContent(article.url).then((content:string)=>{
       let rows = content.split('\r\n');
-      rows.push('');
-      rows.push('');
-      rows.push('');
-      rows.push('');
-      rows.push('');
+      // let title = (
+      //   <Text style={{
+      //     fontSize:40,
+      //     lineHeight:45,
+      //   }}>{article.title}</Text>
+      // );
+      // rows.unshift(title);
       this._isMounted&&this.setState({
         fetching:false,
         dataSource: ds.cloneWithRows(rows),
@@ -60,10 +62,10 @@ export default class Reader extends React.Component {
   }
   
   componentDidMount() {
-    this.fetchContent(this.getCurrentArticle().url);
+    this.fetchContent(this.getCurrentArticle());
   }
   
-  getCurrentArticle(){
+  getCurrentArticle():Article{
     return this.props.directory[this.state.index];
   }
   
@@ -88,13 +90,15 @@ export default class Reader extends React.Component {
     
     this.lastContentOffsetY = e.nativeEvent.contentOffset.y;
   }
+  
+  //load next page
   handleEndReached=()=>{
     this.setState({
       navMargin:0,
       index:this.state.index+1,
       fetching:true,
     },()=>{
-      this.fetchContent(this.getCurrentArticle().url);
+      this.fetchContent(this.getCurrentArticle());
     });
   }
   
@@ -121,6 +125,7 @@ export default class Reader extends React.Component {
           style={{
             height,
             padding:10,
+            paddingBottom:50
           }}
           onScroll={this.handleScroll}
           initialListSize={10}
@@ -129,10 +134,20 @@ export default class Reader extends React.Component {
           pageSize={10}
           onEndReached={this.handleEndReached}
           dataSource={this.state.dataSource}
-          renderRow={(rowData) => <Text style={{
-            fontSize:25,
-            lineHeight:35,
-          }}>{rowData}</Text>}
+          renderRow={(rowData) => e=>{
+            
+            if(typeof(a) == "string"){
+              let style = {
+                fontSize:25,
+                lineHeight:35,
+              };
+              return <Text style={style}>{rowData}</Text>;
+            }else{
+              return rowData;
+            }
+            
+            
+          }}
         />
       }
       
