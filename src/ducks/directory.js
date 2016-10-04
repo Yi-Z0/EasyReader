@@ -9,13 +9,14 @@ const FETCH_LIST = 'novel/directory/FETCH_LIST';
 const FETCH_LIST_SUCCESS = 'novel/directory/FETCH_LIST_SUCCESS';
 const FETCH_LIST_FAILED = 'novel/directory/FETCH_LIST_FAILED';
 const UPDATE_LIST_ORDER = 'novel/directory/UPDATE_LIST_ORDER';
-// const UPDATE_NOVEL_STAR = 'novel/directory/UPDATE_NOVEL_STAR';
+const UPDATE_LAST_READ = 'novel/directory/UPDATE_LAST_READ';
 
 export const fetchListFromDB = (novel:Novel)=>{
   return (dispatch:func) => {
     if (novel.isParseDirectory) {
       dispatch(_fetchList());
       dispatch(fetchListSuccess(JSON.parse(novel.directory)));
+      dispatch(updateLastRead(novel.lastReadIndex));
     }else{
       dispatch(_fetchList());
     }
@@ -30,6 +31,7 @@ export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
         novel.directory = JSON.stringify(directory);
         novel.isParseDirectory = true;
         dispatch(fetchListSuccess(directory));
+        dispatch(updateLastRead(novel.lastReadIndex));
       });
     }).catch(e=>alert(e));
   };
@@ -39,6 +41,7 @@ const _fetchList = createAction(FETCH_LIST);
 const fetchListSuccess = createAction(FETCH_LIST_SUCCESS);
 const fetchListFailed = createAction(FETCH_LIST_FAILED);
 export const updateListOrder = createAction(UPDATE_LIST_ORDER);
+export const updateLastRead = createAction(UPDATE_LAST_READ);
 // export const updateNovelStar = createAction(UPDATE_NOVEL_STAR);
 
 const initialState:{
@@ -93,6 +96,19 @@ export default handleActions({
       dataSource
     };
   },
-  
+  [UPDATE_LAST_READ](state,action) {
+    let dataSource;
+    if(state.order=='desc'){
+      dataSource = ds.cloneWithRows([...state.directory].reverse());
+    }else{
+      dataSource = ds.cloneWithRows(state.directory);
+    }
+    
+    return {
+      ...state,
+      lastReadIndex:action.payload,
+      dataSource
+    };
+  },
   
 }, initialState);

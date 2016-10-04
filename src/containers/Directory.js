@@ -8,7 +8,7 @@ import { Container, Navbar } from 'navbar-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import {fetchListFromDB,fetchListFromNetwork,updateListOrder} from '../ducks/directory';
+import {fetchListFromDB,fetchListFromNetwork,updateListOrder,updateLastRead} from '../ducks/directory';
 import {getArticlesFromUrl} from '../parser';
 
 class Directory extends React.Component {
@@ -20,9 +20,7 @@ class Directory extends React.Component {
     this.props.fetchListFromNetwork(this.props.novel);
     let self = this;
     setTimeout(function(){
-      if(self._scrollView){
-        self._scrollView.scrollTo({y:(self.props.novel.lastReadIndex)*49,animated:false});
-      }
+      self.scrollTo();
     },100);
     
   }
@@ -46,6 +44,7 @@ class Directory extends React.Component {
     
     realmFactory().write(()=>{
       this.props.novel.lastReadIndex = index;
+      this.props.updateLastRead(index);
       this.forceUpdate();
     });
     
@@ -55,6 +54,21 @@ class Directory extends React.Component {
       index
     });
     
+  }
+  
+  scrollTo=()=>{
+    if(this._scrollView ){
+      let index = this.props.lastReadIndex;
+      if(this.props.lastReadIndex+1 >= this.props.directory.length){
+        index -= 10;
+      }
+      this._scrollView.scrollTo({y:index*49,animated:false});
+    }
+  };
+  componentWillReceiveProps(nextProps) {
+    if( nextProps.lastReadIndex!=this.props.lastReadIndex){
+      this.scrollTo();
+    }
   }
   
   _scrollView;
@@ -82,22 +96,24 @@ class Directory extends React.Component {
         directoryCopy = [...this.props.directory].reverse();
         
       }
-      if(this.props.directory[this.props.novel.lastReadIndex]){
-        lastReadArticleUrl = this.props.directory[this.props.novel.lastReadIndex].url;
+      if(this.props.directory[this.props.lastReadIndex]){
+        lastReadArticleUrl = this.props.directory[this.props.lastReadIndex].url;
       }
-
+console.log(lastReadArticleUrl);
       content = 
           <ListView
             ref={_scrollView=>this._scrollView=_scrollView}
             dataSource={this.props.dataSource}
             renderRow={(rowData,sectionID,rowID) => {
               let style={};
+              let key = rowData.url;
               if(rowData.url == lastReadArticleUrl){
                 style.color = "#FD973C";
+                key += "-selected";
               }
               return <ListItem
                   titleStyle={style}
-                  key={rowData.url}
+                  key={key}
                   title={rowData.title}
                   onPress={this.handleClickArticle.bind(null,rowData,rowID)}
                 />;
@@ -151,6 +167,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchListFromDB: bindActionCreators(fetchListFromDB, dispatch),
     fetchListFromNetwork: bindActionCreators(fetchListFromNetwork, dispatch),
     updateListOrder: bindActionCreators(updateListOrder, dispatch),
+    updateLastRead: bindActionCreators(updateLastRead, dispatch),
   };
 };
 

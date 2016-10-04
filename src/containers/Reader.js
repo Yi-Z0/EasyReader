@@ -7,7 +7,7 @@ import { Container, Navbar } from 'navbar-native';
 import {parseArticleContent} from '../parser';
 import { Button } from 'react-native-elements'
 
-
+//在切换页面的时候,发送通知,切换index
 type Props = {
   novel:Novel,
   navigationState:any,
