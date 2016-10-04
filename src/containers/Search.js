@@ -10,8 +10,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 
-import {search} from '../../ducks/search';
-import List from './components/List';
+import {search} from '../ducks/search';
+import List from '../components/List';
 
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 

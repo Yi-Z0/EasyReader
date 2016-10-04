@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ListView } from 'realm/react-native';
 
-import {fetch} from '../../ducks/bookshelf';
+import {fetch} from '../ducks/bookshelf';
 
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 class Bookshelf extends React.Component {
