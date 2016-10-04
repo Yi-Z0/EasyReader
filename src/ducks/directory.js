@@ -31,7 +31,7 @@ export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
         novel.isParseDirectory = true;
         dispatch(fetchListSuccess(directory));
       });
-    });
+    }).catch(e=>alert(e));
   };
 };
 
@@ -80,7 +80,8 @@ export default handleActions({
   },
   [UPDATE_LIST_ORDER](state,action) {
     let dataSource;
-    if(state.order=='desc'){
+    if(state.order=='asc'){
+      //change to desc
       dataSource = ds.cloneWithRows([...state.directory].reverse());
     }else{
       dataSource = ds.cloneWithRows(state.directory);

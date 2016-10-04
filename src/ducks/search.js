@@ -12,13 +12,12 @@ export const search = (keywords:string)=>{
     let master = new Master();
     
     master.search(keywords,(novel)=>{
-      console.log(novel);
       dispatch(foundNovel({
         keywords,
         novel
       }));
-    }).then((data)=>{
-      console.log('finished');
+    }).then(()=>{
+      dispatch(failed());
     }).catch((error)=>{
       dispatch(failed(error));
     });
@@ -55,6 +54,12 @@ export default handleActions({
       }
     }else{
       return state;
+    }
+  },
+  [FAILED](state,action){
+    return {
+      ...state,
+      searching: false,
     }
   }
 }, initialState);

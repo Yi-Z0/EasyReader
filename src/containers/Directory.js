@@ -15,11 +15,16 @@ class Directory extends React.Component {
   componentWillMount() {
     this.props.fetchListFromDB(this.props.novel);
   }
+  
   componentDidMount() {
     this.props.fetchListFromNetwork(this.props.novel);
-    if(this._scrollView){
-      this._scrollView.scrollTo({y:(this.props.novel.lastReadIndex)*49});
-    }
+    let self = this;
+    setTimeout(function(){
+      if(self._scrollView){
+        self._scrollView.scrollTo({y:(self.props.novel.lastReadIndex)*49,animated:false});
+      }
+    },100);
+    
   }
   
   handleSwitchStar = ()=>{
