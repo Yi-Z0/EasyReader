@@ -15,7 +15,11 @@ export const fetchListFromDB = (novel:Novel)=>{
   return (dispatch:func) => {
     if (novel.isParseDirectory) {
       dispatch(_fetchList());
-      dispatch(fetchListSuccess(JSON.parse(novel.directory)));
+      let directory = JSON.parse(novel.directory);
+      if(novel.lastReadIndex>directory.length/2.0){
+        dispatch(updateListOrder('desc'));
+      }
+      dispatch(fetchListSuccess(directory));
       dispatch(updateLastRead(novel.lastReadIndex));
     }else{
       dispatch(_fetchList());
@@ -82,8 +86,14 @@ export default handleActions({
     };
   },
   [UPDATE_LIST_ORDER](state,action) {
-    let dataSource;
-    if(state.order=='asc'){
+    let dataSource,order;
+    if(action.payload  == 'asc'||action.payload  == 'desc'){
+      order = action.payload;
+    }else{
+      order = state.order=='desc'?'asc':'desc';
+    }
+    
+    if(order=='desc'){
       //change to desc
       dataSource = ds.cloneWithRows([...state.directory].reverse());
     }else{
@@ -92,7 +102,7 @@ export default handleActions({
     
     return {
       ...state,
-      order:state.order=='desc'?'asc':'desc',
+      order,
       dataSource
     };
   },

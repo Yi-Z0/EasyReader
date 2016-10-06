@@ -56,18 +56,28 @@ class Directory extends React.Component {
     
   }
   
-  scrollTo=()=>{
+  lastScrollIndex = 0;
+  scrollTo=(index = this.getCurrentIndex())=>{
     if(this._scrollView ){
-      let index = this.props.lastReadIndex;
-      if(this.props.lastReadIndex+1 >= this.props.directory.length){
-        index -= 10;
-      }
       this._scrollView.scrollTo({y:index*49,animated:false});
+      this.lastScrollIndex = index;
     }
   };
+  
+  getCurrentIndex=(props = this.props)=>{
+    if(props.order == 'desc'){
+      return props.directory.length-props.lastReadIndex;
+    }else{
+      return props.lastReadIndex;
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if( nextProps.lastReadIndex!=this.props.lastReadIndex){
-      this.scrollTo();
+      let index = this.getCurrentIndex(nextProps);
+      if(Math.abs(index-this.lastScrollIndex)>=10){
+        this.scrollTo(index);
+      }
     }
   }
   
@@ -99,7 +109,7 @@ class Directory extends React.Component {
       if(this.props.directory[this.props.lastReadIndex]){
         lastReadArticleUrl = this.props.directory[this.props.lastReadIndex].url;
       }
-console.log(lastReadArticleUrl);
+
       content = 
           <ListView
             ref={_scrollView=>this._scrollView=_scrollView}

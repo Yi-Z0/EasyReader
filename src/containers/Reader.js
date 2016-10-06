@@ -7,6 +7,11 @@ import { Container, Navbar } from 'navbar-native';
 import {parseArticleContent} from '../parser';
 import { Button } from 'react-native-elements'
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import {updateLastRead} from '../ducks/directory';
+
 //在切换页面的时候,发送通知,切换index
 type Props = {
   novel:Novel,
@@ -16,7 +21,7 @@ type Props = {
 };
 
 const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-export default class Reader extends React.Component {
+class Reader extends React.Component {
   realm:Realm;
   props: Props;
   state: {
@@ -65,14 +70,14 @@ export default class Reader extends React.Component {
       if(this.props.directory[index+1]){
         nextBTN=(
           <Button
-          onPress={e=>this.fetchContent(index+1)}
+          onPress={e=>this.handleGotoArticle(index+1)}
           title='下一章' />
         );
       }
       if(this.props.directory[index-1]){
         beforeBTN=(
           <Button
-          onPress={e=>this.fetchContent(index-1)}
+          onPress={e=>this.handleGotoArticle(index-1)}
           title='上一章' />
         );
       }
@@ -109,6 +114,10 @@ export default class Reader extends React.Component {
     this.fetchContent(this.state.index);
   }
   
+  handleGotoArticle = (index:number)=>{
+    this.props.updateLastRead(index);
+    this.fetchContent(index);;
+  }
   lastContentOffsetY = 0;
   handleScroll=(e:Event)=>{
     if(e.nativeEvent.contentOffset.y>100){
@@ -194,6 +203,7 @@ export default class Reader extends React.Component {
           backgroundColor:'#9FB2A1'
         }}>
         <Navbar
+        title={current.title}
         left={{
           icon: "ios-arrow-back",
           label: "返回",
@@ -235,3 +245,18 @@ export default class Reader extends React.Component {
   }
 
 }
+const mapStateToProps = (state, ownProps) => {
+  return {
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateLastRead: bindActionCreators(updateLastRead, dispatch),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Reader);
