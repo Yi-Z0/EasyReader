@@ -50,7 +50,7 @@ class Reader extends React.Component {
     this.realm = realmFactory();
   }
   
-  fetchContent = (index:number)=>{
+  fetchContent = (index:number,refresh:bool = false)=>{
     let article:Article = this.props.directory[index];
     if(!article){
       return;
@@ -58,14 +58,16 @@ class Reader extends React.Component {
     this._isMounted&&this.setState({
       navMargin:0,
       fetching:true,
-      maxContentLength:0
+      maxContentLength:0,
+      index
     });
     
     this.realm.write(()=>{
       this.props.novel.lastReadIndex = index;
-    })
+    });
+    
 
-    parseArticleContent(article.url).then((content:string)=>{
+    parseArticleContent(article.url,refresh).then((content:string)=>{
       let rows = content.split('\r\n');
       
       
@@ -107,10 +109,21 @@ class Reader extends React.Component {
       this._isMounted&&this.setState({
         fetching:false,
         dataSource: ds.cloneWithRows(rows),
+        index
       });
     }).catch((e)=>{
       console.log(e);
     });
+    
+    //load more data
+    for (var i = 1; i <= 5; i++) {
+      if(this.props.directory[index+i]){
+        parseArticleContent(this.props.directory[index+i].url).catch(e=>{
+          console.log(e);
+        });
+      }
+    }
+    
   }
   
   componentDidMount() {
@@ -226,9 +239,9 @@ class Reader extends React.Component {
         }}
         right={{
           label: "刷新",
-          onPress: e=>this.setState({
-            refetch:this.state.refetch+1
-          })
+          onPress: e=>{
+            this.fetchContent(this.state.index,true);
+          }
         }}
         style={{
           marginTop:this.state.navMargin
