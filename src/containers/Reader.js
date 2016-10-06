@@ -32,6 +32,7 @@ class Reader extends React.Component {
     dataSource:ListView.DataSource|null,
     fontSize:number,
     directory:Array<Article>,
+    maxContentLength:number,
   };
   
   constructor(props:Props) {
@@ -44,6 +45,7 @@ class Reader extends React.Component {
       dataSource:null,
       fontSize:25,
       directory:this.props.directory,
+      maxContentLength:0,
     };
     this.realm = realmFactory();
   }
@@ -55,7 +57,8 @@ class Reader extends React.Component {
     }
     this._isMounted&&this.setState({
       navMargin:0,
-      fetching:true
+      fetching:true,
+      maxContentLength:0
     });
     
     this.realm.write(()=>{
@@ -121,26 +124,40 @@ class Reader extends React.Component {
   lastContentOffsetY = 0;
   handleScroll=(e:Event)=>{
     if(e.nativeEvent.contentOffset.y>100){
-      
-      let difference = e.nativeEvent.contentOffset.y - this.lastContentOffsetY;
-      if(difference>0){
-        if(this.state.navMargin>-64){
-          let val = this.state.navMargin-difference<-64?-64:this.state.navMargin-difference;
-          this.setState({
-            navMargin:val
-          });
-        }
+      if(this.state.maxContentLength>0 
+        
+        &&
+        (e.nativeEvent.contentOffset.y>this.state.maxContentLength
+        || this.state.maxContentLength - e.nativeEvent.contentOffset.y <200
+        )
+      ){
       }else{
-        if(this.state.navMargin!=0){
-          let val = this.state.navMargin-difference>0?0:this.state.navMargin-difference;
-          this.setState({
-            navMargin:val
-          });
+        let difference = e.nativeEvent.contentOffset.y - this.lastContentOffsetY;
+        if(difference>0){
+          if(this.state.navMargin>-64){
+            let val = this.state.navMargin-difference<-64?-64:this.state.navMargin-difference;
+            this.setState({
+              navMargin:val
+            });
+          }
+        }else{
+          if(this.state.navMargin!=0){
+            let val = this.state.navMargin-difference>0?0:this.state.navMargin-difference;
+            this.setState({
+              navMargin:val
+            });
+          }
         }
       }
     }
     
     this.lastContentOffsetY = e.nativeEvent.contentOffset.y;
+  }
+  handleEndReached= (e)=>{
+    this.setState({
+      navMargin:0,
+      maxContentLength:this.lastContentOffsetY
+    });
   }
 
   
@@ -166,17 +183,15 @@ class Reader extends React.Component {
         content = <ListView
           style={{
             height:height-this.state.navMargin-64,
-            padding:10,
+            paddingTop:10,
+            paddingLeft:this.state.fontSize-5,
+            paddingRight:this.state.fontSize-5,
             paddingBottom:50
           }}
-          onScroll={this.handleScroll}
-          onEndReached={e=>{
-            this.setState({
-              navMargin:0
-            })
-          }}
+          onScroll={this.handleScroll.bind(this)}
+          onEndReached={this.handleEndReached.bind(this)}
           initialListSize={10}
-          onEndReachedThreshold={1}
+          onEndReachedThreshold={0}
           scrollRenderAheadDistance={1}
           pageSize={10}
           dataSource={this.state.dataSource}
@@ -195,7 +210,7 @@ class Reader extends React.Component {
           }}
         />
       }
-      
+
       return (
         <Container 
         type="scroll"

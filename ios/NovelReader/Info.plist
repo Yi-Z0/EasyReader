@@ -48,6 +48,11 @@
           <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
           <true/>
         </dict>
+        <key>www.luoqiu.com</key>
+        <dict>
+          <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+        </dict>
         <key>zhannei.baidu.com</key>
         <dict>
           <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
