@@ -6,7 +6,10 @@ let schema = [Article.schema,Novel.schema];
 console.log('db path',Realm.defaultPath);
 
 global.realmFactory = ()=>{
-  return new Realm({schema: schema});
+  return new Realm({
+    schema: schema,
+    schemaVersion: 4
+  });
 }
 
 global.makeCancelable = (promise) => {

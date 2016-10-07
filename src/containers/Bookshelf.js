@@ -1,7 +1,7 @@
 //@flow
 import React from 'react';
-import {View,TouchableWithoutFeedback} from 'react-native';
-import { ListItem } from 'react-native-elements';
+import {View,Text,TouchableWithoutFeedback,StyleSheet} from 'react-native';
+import { List,ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Actions} from 'react-native-router-flux';
 import { Container, Navbar } from 'navbar-native';
@@ -11,12 +11,90 @@ import { ListView } from 'realm/react-native';
 
 import {fetch} from '../ducks/bookshelf';
 
+let styles = StyleSheet.create({
+  rowItem: {
+    marginVertical: 10,
+    marginHorizontal:10,
+  },
+  rowTitle: {
+    fontSize:24,
+  },
+});
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 class Bookshelf extends React.Component {
   componentWillMount() {
     this.props.fetch();
   }
+  renderRow(novel:Novel,sectionID,rowID){
+    return <ListItem
+        key={sectionID}
+        component={()=>{
+          let lastReadText , lastArticleText;
+          if(novel.lastReadTitle){
+            lastReadText = <Text
+            numberOfLines={1}
+            >已读 : {novel.lastReadTitle}</Text>
+          }
+          if(novel.lastArticleTitle){
+            lastArticleText = <Text
+            numberOfLines={1}
+            >最新 : {novel.lastReadTitle}</Text>
+          }
+          return (
+            <TouchableWithoutFeedback onPress={e=>{
+              Actions.directory({novel:novel})
+            }}>
+            <View style={styles.rowItem}>
+            <Text style={styles.rowTitle}>{novel.title}</Text>
+            {lastReadText}
+            {lastArticleText}
+            <Text numberOfLines={1}>来源 : {novel.directoryUrl}</Text>
+          </View>
+          </TouchableWithoutFeedback>
+          );
+        }
+        }
+      />;
+  }
   render() {
+    let starList,unstarList;
+    if(this.props.starDataSource.getRowCount()){
+      starList = (
+        <View>
+        <Text style={{
+        fontSize:24,
+        fontWeight:'300',
+        marginTop:20,
+        marginBottom:-10
+      }}>收藏列表</Text>
+      <List>
+      <ListView
+        enableEmptySections={true}
+        dataSource={this.props.starDataSource}
+        renderRow={this.renderRow}
+      />
+      </List>
+    </View>);
+    }
+
+    if(this.props.unstarDataSource.getRowCount()){
+      unstarList = (
+        <View>
+        <Text style={{
+        fontSize:24,
+        fontWeight:'300',
+        marginTop:20,
+        marginBottom:-10
+      }}>未收藏列表</Text>
+      <List>
+        <ListView
+          enableEmptySections={true}
+          dataSource={this.props.unstarDataSource}
+          renderRow={this.renderRow}
+        />
+      </List>
+    </View>);
+    }
     return (
       <Container>
           <Navbar
@@ -27,19 +105,9 @@ class Bookshelf extends React.Component {
                   onPress: Actions.search
               }}
           />
-          <ListView
-            enableEmptySections={true}
-            dataSource={this.props.dataSource}
-            renderRow={(rowData,sectionID,rowID) => {
-              return <ListItem
-                  onPress={e=>{
-                    Actions.directory({novel:rowData})
-                  }}
-                  key={sectionID}
-                  title={rowData.title}
-                />;
-            }}
-          />
+          
+          {starList}
+          {unstarList}
       </Container>
     );
   }
@@ -48,7 +116,8 @@ class Bookshelf extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    dataSource: ds.cloneWithRows(state.bookshelf.novels),
+    starDataSource: ds.cloneWithRows(state.bookshelf.starNovels),
+    unstarDataSource: ds.cloneWithRows(state.bookshelf.unstarNovels),
   };
 };
 

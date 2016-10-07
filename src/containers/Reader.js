@@ -64,10 +64,11 @@ class Reader extends React.Component {
     
     this.realm.write(()=>{
       this.props.novel.lastReadIndex = index;
+      this.props.novel.lastReadTitle = article.title;
     });
     
 
-    parseArticleContent(article.url,refresh).then((content:string)=>{
+    parseArticleContent(this.props.novel.directoryUrl,article.url,refresh).then((content:string)=>{
       let rows = content.split('\r\n');
       
       
@@ -119,7 +120,7 @@ class Reader extends React.Component {
     //load more data
     for (var i = 1; i <= 5; i++) {
       if(this.props.directory[index+i]){
-        parseArticleContent(this.props.directory[index+i].url).catch(e=>{
+        parseArticleContent(this.props.novel.directoryUrl,this.props.directory[index+i].url).catch(e=>{
           console.log(e);
         });
       }

@@ -28,11 +28,12 @@ export const fetchListFromDB = (novel:Novel)=>{
 
 export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
   return (dispatch:func) => {
-    getArticlesFromUrl(novel.directoryUrl).then((directory)=>{
+    getArticlesFromUrl(novel.directoryUrl).then((directory:Array<Article>)=>{
       let realm = realmFactory();
       realm.write(()=>{
         novel.directory = JSON.stringify(directory);
         novel.isParseDirectory = true;
+        novel.lastArticleTitle = directory[directory.length-1].title;
         if (
           require('../store').default.getState().directory.directoryUrl
           == novel.directoryUrl

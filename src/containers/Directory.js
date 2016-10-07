@@ -44,6 +44,7 @@ class Directory extends React.Component {
     
     realmFactory().write(()=>{
       this.props.novel.lastReadIndex = index;
+      this.props.novel.lastReadTitle = article.title;
       this.props.updateLastRead(index);
       this.forceUpdate();
     });

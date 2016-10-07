@@ -18,6 +18,8 @@ declare type Novel = {
   star:bool,
   created:Date,
   lastReadIndex:number,
+  lastReadTitle:string,
+  lastArticleTitle:string,
 }
 
 declare type Article = {

@@ -5,17 +5,20 @@ const FETCH = 'novel/bookshelf/FETCH';
 
 export const fetch = createAction(FETCH, () => {
   let realm = realmFactory();
-  return realm.objects('Novel');
+  let novels = realm.objects('Novel');
+  return {
+    starNovels:novels.filtered('star=true'),
+    unstarNovels:novels.filtered('star=false'),
+  };
 });
 
 const initialState = {
-  novels: [],
+  starNovels: [],
+  unstarNovels: [],
 }
 
 export default handleActions({
   [FETCH](state,action) {
-    return {
-      novels:action.payload
-    };
+    return action.payload;
   }
 }, initialState);

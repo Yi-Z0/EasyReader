@@ -7,7 +7,6 @@ export default class Article {
       url: 'string',
       title: 'string',
       content: 'string',
-      full: 'bool',
     }
   }
 }

@@ -22,12 +22,12 @@ const store = createStore(reducers,
 );
 
 // 
-// if (module.hot) {
-//   // Enable hot module replacement for reducers
-//   module.hot.accept(() => {
-//     const nextRootReducer = require('./ducks').reducers;
-//     store.replaceReducer(nextRootReducer);
-//   });
-// }
+if (module.hot) {
+  // Enable hot module replacement for reducers
+  module.hot.accept(() => {
+    const nextRootReducer = require('./ducks').reducers;
+    store.replaceReducer(nextRootReducer);
+  });
+}
 
 export default store;
