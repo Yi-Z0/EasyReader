@@ -195,11 +195,15 @@ class Reader extends React.Component {
         //将内容分成多个数组来显示
         content = <ListView
           style={{
-            height:height-this.state.navMargin-64,
+            height:height,
             paddingTop:10,
-            paddingLeft:this.state.fontSize-5,
-            paddingRight:this.state.fontSize-5,
-            paddingBottom:50
+            paddingLeft:this.state.fontSize-10,
+            paddingRight:this.state.fontSize-15,
+          }}
+          renderFooter={()=>{
+            return <View style={{
+              height:100
+            }} />
           }}
           onScroll={this.handleScroll.bind(this)}
           onEndReached={this.handleEndReached.bind(this)}

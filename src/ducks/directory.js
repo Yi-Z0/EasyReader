@@ -13,16 +13,15 @@ const UPDATE_LAST_READ = 'novel/directory/UPDATE_LAST_READ';
 
 export const fetchListFromDB = (novel:Novel)=>{
   return (dispatch:func) => {
+    dispatch(_fetchList(novel.directoryUrl));
+    
     if (novel.isParseDirectory) {
-      dispatch(_fetchList());
       let directory = JSON.parse(novel.directory);
       if(novel.lastReadIndex>directory.length/2.0){
         dispatch(updateListOrder('desc'));
       }
       dispatch(fetchListSuccess(directory));
       dispatch(updateLastRead(novel.lastReadIndex));
-    }else{
-      dispatch(_fetchList());
     }
   };
 };
@@ -34,8 +33,13 @@ export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
       realm.write(()=>{
         novel.directory = JSON.stringify(directory);
         novel.isParseDirectory = true;
-        dispatch(fetchListSuccess(directory));
-        dispatch(updateLastRead(novel.lastReadIndex));
+        if (
+          require('../store').default.getState().directory.directoryUrl
+          == novel.directoryUrl
+        ) {
+          dispatch(fetchListSuccess(directory));
+          dispatch(updateLastRead(novel.lastReadIndex));
+        }
       });
     }).catch(e=>alert(e));
   };
@@ -52,6 +56,7 @@ const initialState:{
   fetching: bool,
   error:string,
   directory:Array<Article>,
+  directoryUrl:string,
   order:'desc'|'asc',
   lastReadIndex:number,
   dataSource:ListView.dataSource
@@ -59,6 +64,7 @@ const initialState:{
   fetching:true,
   error:'',
   directory:[],
+  directoryUrl:'',
   order:'asc',
   lastReadIndex:0,
   dataSource:ds.cloneWithRows([])
@@ -68,7 +74,8 @@ export default handleActions({
   [FETCH_LIST](state,action) {
     return {
       ...initialState,
-      dataSource:ds.cloneWithRows([])
+      dataSource:ds.cloneWithRows([]),
+      directoryUrl:action.payload,
     };
   },
   [FETCH_LIST_SUCCESS](state,action) {

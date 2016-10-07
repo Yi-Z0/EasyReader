@@ -93,7 +93,7 @@ function fetchUrl(url: string): Promise < cheerio > {
        resolve($);
        return Promise.resolve($);
      }).catch(e => {
-       alert(e);
+      //  alert(e);
        reject(e);
        return Promise.reject(e);
      });

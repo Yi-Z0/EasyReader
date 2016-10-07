@@ -3,16 +3,17 @@ import {applyMiddleware, createStore,compose} from 'redux';
 import promiseMiddleware from 'redux-promise';
 import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
+import { composeWithDevTools } from 'remote-redux-devtools';
 
 import {reducers} from './ducks';
 
 const store = createStore(reducers,
   {},
-  applyMiddleware(
+  composeWithDevTools(applyMiddleware(
     promiseMiddleware,
     thunk,
     // createLogger()
-  )
+  ))
 );
 
 
