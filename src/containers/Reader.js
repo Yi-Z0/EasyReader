@@ -43,7 +43,7 @@ class Reader extends React.Component {
       navMargin:0,
       fetching:true,
       dataSource:null,
-      fontSize:25,
+      fontSize:24,
       directory:this.props.directory,
       maxContentLength:0,
     };
@@ -101,6 +101,7 @@ class Reader extends React.Component {
         <Text style={{
           fontSize:this.state.fontSize+10,
           lineHeight:this.state.fontSize+15,
+          fontWeight:'200'
         }}>{article.title+"\n"}</Text>
       );
       rows.unshift(title);
@@ -210,13 +211,14 @@ class Reader extends React.Component {
           initialListSize={10}
           onEndReachedThreshold={0}
           scrollRenderAheadDistance={1}
-          pageSize={10}
+          pageSize={20}
           dataSource={this.state.dataSource}
           renderRow={(rowData) => {
             if(typeof(rowData) == "string"){
               let style = {
                 fontSize:this.state.fontSize,
-                lineHeight:this.state.fontSize+5,
+                lineHeight:this.state.fontSize*1.35,
+                fontWeight:'200'
               };
               return <Text style={style}>{rowData}</Text>;
             }else{
