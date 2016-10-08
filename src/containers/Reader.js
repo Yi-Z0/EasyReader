@@ -102,7 +102,7 @@ class Reader extends React.Component {
         <Text style={{
           fontSize:this.state.fontSize+10,
           lineHeight:this.state.fontSize+15,
-          fontWeight:'200'
+          fontWeight:'300'
         }}>{article.title+"\n"}</Text>
       );
       rows.unshift(title);
@@ -193,6 +193,11 @@ class Reader extends React.Component {
         />
         </View>;
       }else{
+        let style = {
+          fontSize:this.state.fontSize,
+          lineHeight:this.state.fontSize*1.35,
+          fontWeight:'300'
+        };
         var {height, width} = Dimensions.get('window');
         //将内容分成多个数组来显示
         content = <ListView
@@ -216,11 +221,6 @@ class Reader extends React.Component {
           dataSource={this.state.dataSource}
           renderRow={(rowData) => {
             if(typeof(rowData) == "string"){
-              let style = {
-                fontSize:this.state.fontSize,
-                lineHeight:this.state.fontSize*1.35,
-                fontWeight:'200'
-              };
               return <Text style={style}>{rowData}</Text>;
             }else{
               return rowData;

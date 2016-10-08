@@ -19,6 +19,9 @@ let styles = StyleSheet.create({
   rowTitle: {
     fontSize:24,
   },
+  rowSubTitle:{
+    color:'#666666'
+  }
 });
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 class Bookshelf extends React.Component {
@@ -32,13 +35,15 @@ class Bookshelf extends React.Component {
           let lastReadText , lastArticleText;
           if(novel.lastReadTitle){
             lastReadText = <Text
+            style={styles.rowSubTitle}
             numberOfLines={1}
             >已读 : {novel.lastReadTitle}</Text>
           }
           if(novel.lastArticleTitle){
             lastArticleText = <Text
+            style={styles.rowSubTitle}
             numberOfLines={1}
-            >最新 : {novel.lastReadTitle}</Text>
+            >最新 : {novel.lastArticleTitle}</Text>
           }
           return (
             <TouchableWithoutFeedback onPress={e=>{
@@ -46,9 +51,11 @@ class Bookshelf extends React.Component {
             }}>
             <View style={styles.rowItem}>
             <Text style={styles.rowTitle}>{novel.title}</Text>
-            {lastReadText}
             {lastArticleText}
-            <Text numberOfLines={1}>来源 : {novel.directoryUrl}</Text>
+            {lastReadText}
+            <Text 
+            style={styles.rowSubTitle}
+            numberOfLines={1}>来源 : {novel.directoryUrl}</Text>
           </View>
           </TouchableWithoutFeedback>
           );
