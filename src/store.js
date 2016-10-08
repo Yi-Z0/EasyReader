@@ -3,12 +3,12 @@ import {applyMiddleware, createStore,compose} from 'redux';
 import thunk from 'redux-thunk';
 import devTools from 'remote-redux-devtools';
 import { Platform } from 'react-native';
-
+import Immutable from 'immutable';
 import {reducers} from './ducks';
 
 
 const store = createStore(reducers,
-  {},
+  Immutable.fromJS({}),
   compose(
     applyMiddleware(
       thunk

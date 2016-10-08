@@ -1,9 +1,8 @@
 //@flow
 import { createAction,handleActions } from 'redux-actions';
-import {ListView} from 'react-native';
 import {getArticlesFromUrl} from '../parser';
-
-let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.url != r2.url});
+import { createReducer } from 'redux-immutablejs'
+import Immutable from 'immutable'
 
 const FETCH_LIST = 'novel/directory/FETCH_LIST';
 const FETCH_LIST_SUCCESS = 'novel/directory/FETCH_LIST_SUCCESS';
@@ -35,7 +34,7 @@ export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
         novel.isParseDirectory = true;
         novel.lastArticleTitle = directory[directory.length-1].title;
         if (
-          require('../store').default.getState().directory.directoryUrl
+          require('../store').default.getState().getIn(['directory','directoryUrl'])
           == novel.directoryUrl
         ) {
           dispatch(fetchListSuccess(directory));
@@ -53,80 +52,51 @@ export const updateListOrder = createAction(UPDATE_LIST_ORDER);
 export const updateLastRead = createAction(UPDATE_LAST_READ);
 // export const updateNovelStar = createAction(UPDATE_NOVEL_STAR);
 
-const initialState:{
-  fetching: bool,
-  error:string,
-  directory:Array<Article>,
-  directoryUrl:string,
-  order:'desc'|'asc',
-  lastReadIndex:number,
-  dataSource:ListView.dataSource
-} = {
+const initialState = Immutable.fromJS({
   fetching:true,
   error:'',
   directory:[],
   directoryUrl:'',
   order:'asc',
   lastReadIndex:0,
-  dataSource:ds.cloneWithRows([])
-};
+});
 
-export default handleActions({
+export default createReducer(initialState,{
   [FETCH_LIST](state,action) {
-    return {
-      ...initialState,
-      dataSource:ds.cloneWithRows([]),
+    return state.merge({
       directoryUrl:action.payload,
-    };
+      fetching:true,
+      error:'',
+      directory:[],
+      order:'asc',
+      lastReadIndex:0,
+    });
   },
   [FETCH_LIST_SUCCESS](state,action) {
-    let dataSource;
-    if(state.order=='desc'){
-      dataSource = ds.cloneWithRows([...action.payload].reverse());
-    }else{
-      dataSource = ds.cloneWithRows(action.payload);
-    }
-    return {
-      ...state,
+    return state.merge({
       fetching:false,
-      directory:action.payload,
-      dataSource
-    };
+      directory:action.payload
+    });
   },
   [UPDATE_LIST_ORDER](state,action) {
-    let dataSource,order;
+    
+    let order;
     if(action.payload  == 'asc'||action.payload  == 'desc'){
       order = action.payload;
     }else{
-      order = state.order=='desc'?'asc':'desc';
+      order = state.get('order')=='desc'?'asc':'desc';
     }
     
-    if(order=='desc'){
-      //change to desc
-      dataSource = ds.cloneWithRows([...state.directory].reverse());
-    }else{
-      dataSource = ds.cloneWithRows(state.directory);
-    }
-    
-    return {
-      ...state,
-      order,
-      dataSource
-    };
+    return state.merge({
+      order
+    });
   },
   [UPDATE_LAST_READ](state,action) {
-    let dataSource;
-    if(state.order=='desc'){
-      dataSource = ds.cloneWithRows([...state.directory].reverse());
-    }else{
-      dataSource = ds.cloneWithRows(state.directory);
-    }
+    return state
+      .set('lastReadIndex',action.payload)
+      .setIn(['directory',state.get('lastReadIndex'),'lastRead'],false)
+      .setIn(['directory',action.payload,'lastRead'],true)
     
-    return {
-      ...state,
-      lastReadIndex:action.payload,
-      dataSource
-    };
   },
   
-}, initialState);
+});

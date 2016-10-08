@@ -1,15 +1,16 @@
 //@flow
 import React from 'react';
-import {View,Text,ListView,ScrollView} from 'react-native';
-import { ListItem } from 'react-native-elements'
+import {View} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import {fetchListFromDB,fetchListFromNetwork,updateListOrder,updateLastRead} from '../ducks/directory';
-import {getArticlesFromUrl} from '../parser';
+
+import {fetchListFromDB,fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
+import {getArticlesFromUrl} from '../../parser';
+import List from './Components/List';
 
 class Directory extends React.Component {
   componentWillMount() {
@@ -28,6 +29,7 @@ class Directory extends React.Component {
   handleSwitchStar = ()=>{
     realmFactory().write(()=>{
       this.props.novel.star = !this.props.novel.star;
+      this.props.novel.starAt = new Date();
       this.forceUpdate();
     });
   }
@@ -38,20 +40,20 @@ class Directory extends React.Component {
   
   handleClickArticle = (article:Article,rowIndex:number)=>{
     let index = parseInt(rowIndex);
-    if(this.props.order == 'desc'){
-      index = this.props.directory.length - index -1;
+    if(this.props.params.get('order') == 'desc'){
+      index = this.props.params.get('directory').size - index -1;
     }
     
     realmFactory().write(()=>{
       this.props.novel.lastReadIndex = index;
-      this.props.novel.lastReadTitle = article.title;
+      this.props.novel.lastReadTitle = article.get('title');
       this.props.updateLastRead(index);
       this.forceUpdate();
     });
     
     Actions.reader({
       novel:this.props.novel,
-      directory:this.props.directory,
+      directory:this.props.params.get('directory'),
       index
     });
     
@@ -69,15 +71,30 @@ class Directory extends React.Component {
   };
   
   getCurrentScrollIndex=(props = this.props)=>{
-    if(props.order == 'desc'){
-      return props.directory.length-props.lastReadIndex-3;
+    if(props.params.get('order') == 'desc'){
+      return props.params.get('directory').size-props.params.get('lastReadIndex')-3;
     }else{
-      return props.lastReadIndex;
+      return props.params.get('lastReadIndex');
     }
   }
 
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log(nextProps.params.get('lastReadIndex'));
+  //   if (
+  //     nextProps.params.get('directory') !== this.props.params.get('directory')||
+  //     nextProps.params.get('order') !== this.props.params.get('order') ||
+  //     nextProps.params.get('lastReadIndex') !== this.props.params.get('lastReadIndex') 
+  //   ) {
+  //     
+  //     
+  //     return false;
+  //   }
+  //   
+  //   return true;
+  // }
+  // 
   componentWillReceiveProps(nextProps) {
-    if( nextProps.lastReadIndex!=this.props.lastReadIndex){
+    if( nextProps.params.get('lastReadIndex')!=this.props.params.get('lastReadIndex')){
       let index = this.getCurrentScrollIndex(nextProps);
       if(Math.abs(index-this.lastScrollIndex)>=5){
         this.scrollTo(index);
@@ -87,9 +104,9 @@ class Directory extends React.Component {
   
   _scrollView;
   render() {
-    // this.props.novel;
     let content;
-    if (this.props.fetching) {
+    let arrowLabel = '正序';
+    if (this.props.params.get('fetching')) {
       content =  <View style={{
         flex:1,
         alignSelf:'center',
@@ -104,40 +121,18 @@ class Directory extends React.Component {
       />
       </View>;
     }else{
-      let directoryCopy = this.props.directory;
-      let lastReadArticleUrl = '';
-      if(this.props.order == 'desc'){
-        directoryCopy = [...this.props.directory].reverse();
-        
+      let directory = this.props.params.get('directory');
+      if (this.props.params.get('order') == 'desc') {
+        directory = directory.reverse();
+        arrowLabel = '逆序';
       }
-      if(this.props.directory[this.props.lastReadIndex]){
-        lastReadArticleUrl = this.props.directory[this.props.lastReadIndex].url;
-      }
-
-      content = 
-          <ListView
-            ref={_scrollView=>this._scrollView=_scrollView}
-            dataSource={this.props.dataSource}
-            renderRow={(rowData,sectionID,rowID) => {
-              let style={};
-              let key = rowData.url;
-              if(rowData.url == lastReadArticleUrl){
-                style.color = "#FD973C";
-                key += "-selected";
-              }
-              return <ListItem
-                  titleStyle={style}
-                  key={key}
-                  title={rowData.title}
-                  onPress={this.handleClickArticle.bind(null,rowData,rowID)}
-                />;
-            }}
-          />;
-    }
-    
-    let arrowLabel = '正序';
-    if(this.props.order == 'desc'){
-      arrowLabel = '逆序';
+      console.log(directory);
+      content = <List 
+      scrollRef={_scrollView=>this._scrollView=_scrollView} 
+      items={directory}
+      handleClickArticle={this.handleClickArticle}
+      id={this.props.novel.directoryUrl}
+      />
     }
     
     let starIcon = "star-o";
@@ -145,7 +140,9 @@ class Directory extends React.Component {
       starIcon = "star";
     }
     return (
-      <Container>
+      <Container
+      loading={false}
+      >
           <Navbar
               title={this.props.novel.title}
               left={{
@@ -172,7 +169,7 @@ class Directory extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    ...state.directory
+    params : state.get('directory')
   };
 };
 

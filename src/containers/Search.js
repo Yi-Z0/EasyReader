@@ -8,12 +8,14 @@ import dismissKeyboard from 'dismissKeyboard';
 import { SearchBar } from 'react-native-elements'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import ImmutableDataSource from 'react-native-immutable-listview-datasource'
+
 
 
 import {search} from '../ducks/search';
 import List from '../components/List';
 
-let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
+const ds = new ImmutableDataSource();
 
 class Search extends React.Component {
   
@@ -28,7 +30,7 @@ class Search extends React.Component {
   _textInputRef;
   render() {
     let content;
-    if (this.props.searching) {
+    if (this.props.params.get('searching')) {
       content =  <View style={{
         flex:1,
         alignSelf:'center',
@@ -43,7 +45,7 @@ class Search extends React.Component {
       />
       </View>;
     }else{
-      content = <List ds={ds.cloneWithRows(this.props.novels)}/>;
+      content = <List ds={ds.cloneWithRows(this.props.params.get('novels'))}/>;
     }
     
     return (
@@ -73,7 +75,7 @@ class Search extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    ...state.search
+    params:state.get('search')
   };
 };
 

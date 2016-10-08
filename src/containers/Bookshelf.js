@@ -1,6 +1,6 @@
 //@flow
 import React from 'react';
-import {View,Text,TouchableWithoutFeedback,StyleSheet} from 'react-native';
+import {View,Text,TouchableWithoutFeedback,StyleSheet,ScrollView} from 'react-native';
 import { List,ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Actions} from 'react-native-router-flux';
@@ -74,13 +74,11 @@ class Bookshelf extends React.Component {
         marginTop:20,
         marginBottom:-10
       }}>收藏列表</Text>
-      <List>
       <ListView
         enableEmptySections={true}
         dataSource={this.props.starDataSource}
         renderRow={this.renderRow}
       />
-      </List>
     </View>);
     }
 
@@ -93,13 +91,11 @@ class Bookshelf extends React.Component {
         marginTop:20,
         marginBottom:-10
       }}>未收藏列表</Text>
-      <List>
         <ListView
           enableEmptySections={true}
           dataSource={this.props.unstarDataSource}
           renderRow={this.renderRow}
         />
-      </List>
     </View>);
     }
     return (
@@ -112,9 +108,10 @@ class Bookshelf extends React.Component {
                   onPress: Actions.search
               }}
           />
-          
+          <ScrollView>
           {starList}
           {unstarList}
+          </ScrollView>
       </Container>
     );
   }
@@ -123,8 +120,8 @@ class Bookshelf extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    starDataSource: ds.cloneWithRows(state.bookshelf.starNovels),
-    unstarDataSource: ds.cloneWithRows(state.bookshelf.unstarNovels),
+    starDataSource: ds.cloneWithRows(state.get('bookshelf').starNovels),
+    unstarDataSource: ds.cloneWithRows(state.get('bookshelf').unstarNovels),
   };
 };
 

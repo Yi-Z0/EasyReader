@@ -1,5 +1,5 @@
 //@flow
-import { combineReducers } from 'redux';
+import { combineReducers } from 'redux-immutablejs';
 
 export let bookshelf = require('./bookshelf');
 export let search = require('./search');
