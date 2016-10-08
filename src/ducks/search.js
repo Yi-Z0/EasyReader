@@ -1,6 +1,8 @@
 //@flow
 import { createAction,handleActions } from 'redux-actions';
 import {Master} from '../parser';
+import { createReducer } from 'redux-immutablejs'
+import Immutable from 'immutable'
 
 const SEARCH = 'novel/search/SEARCH';
 const FOUND_NOVEL = 'novel/search/FOUND_NOVEL';
@@ -29,14 +31,14 @@ const _search = createAction(SEARCH);
 const foundNovel = createAction(FOUND_NOVEL);
 const failed = createAction(FAILED);
 
-const initialState = {
+const initialState = Immutable.fromJS({
   novels: [],
   searching:false,
   error:null,
   keywords:''
-}
+});
 
-export default handleActions({
+export default createReducer(initialState,{
   [SEARCH](state,action) {
     return {
       ...initialState, 
@@ -62,4 +64,4 @@ export default handleActions({
       searching: false,
     }
   }
-}, initialState);
+});

@@ -171,9 +171,15 @@ class Directory extends React.Component {
 
 
 const mapStateToProps = (state, ownProps) => {
+  let directory = state.get('directory');
   return {
-    ...state.directory
-  };
+    fetching:directory.get('fetching'),
+    error:directory.get('error'),
+    directory:directory.get('directory'),
+    order:directory.get('order'),
+    lastReadIndex:directory.get('lastReadIndex'),
+    directoryUrl:directory.get('directoryUrl'),
+  }
 };
 
 const mapDispatchToProps = (dispatch) => {

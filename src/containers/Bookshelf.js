@@ -123,8 +123,8 @@ class Bookshelf extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    starDataSource: ds.cloneWithRows(state.bookshelf.starNovels),
-    unstarDataSource: ds.cloneWithRows(state.bookshelf.unstarNovels),
+    starDataSource: ds.cloneWithRows(state.get('bookshelf').starNovels),
+    unstarDataSource: ds.cloneWithRows(state.get('bookshelf').unstarNovels),
   };
 };
 
