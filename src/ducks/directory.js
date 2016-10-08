@@ -34,7 +34,7 @@ export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
         novel.isParseDirectory = true;
         novel.lastArticleTitle = directory[directory.length-1].title;
         if (
-          require('../store').default.getState().get('directory').directoryUrl
+          require('../store').default.getState().getIn(['directory','directoryUrl'])
           == novel.directoryUrl
         ) {
           dispatch(fetchListSuccess(directory));

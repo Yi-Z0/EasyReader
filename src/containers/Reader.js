@@ -31,7 +31,6 @@ class Reader extends React.Component {
     fetching:bool,
     dataSource:ListView.DataSource|null,
     fontSize:number,
-    directory:Array<Article>,
     maxContentLength:number,
   };
   
@@ -44,14 +43,13 @@ class Reader extends React.Component {
       fetching:true,
       dataSource:null,
       fontSize:24,
-      directory:this.props.directory,
       maxContentLength:0,
     };
     this.realm = realmFactory();
   }
   
   fetchContent = (index:number,refresh:bool = false)=>{
-    let article:Article = this.props.directory[index];
+    let article:Article = this.props.directory.get(index);
     if(!article){
       return;
     }
@@ -64,23 +62,23 @@ class Reader extends React.Component {
     
     this.realm.write(()=>{
       this.props.novel.lastReadIndex = index;
-      this.props.novel.lastReadTitle = article.title;
+      this.props.novel.lastReadTitle = article.get('title');
     });
     
 
-    parseArticleContent(this.props.novel.directoryUrl,article.url,refresh).then((content:string)=>{
+    parseArticleContent(this.props.novel.directoryUrl,article.get('url'),refresh).then((content:string)=>{
       let rows = content.split('\r\n');
       
       
       let nextBTN,beforeBTN;
-      if(this.props.directory[index+1]){
+      if(this.props.directory.get(index+1)){
         nextBTN=(
           <Button
           onPress={e=>this.handleGotoArticle(index+1)}
           title='下一章' />
         );
       }
-      if(this.props.directory[index-1]){
+      if(this.props.directory.get(index-1)){
         beforeBTN=(
           <Button
           onPress={e=>this.handleGotoArticle(index-1)}
@@ -103,7 +101,7 @@ class Reader extends React.Component {
           fontSize:this.state.fontSize+10,
           lineHeight:this.state.fontSize+15,
           fontWeight:'300'
-        }}>{article.title+"\n"}</Text>
+        }}>{article.get('title')+"\n"}</Text>
       );
       rows.unshift(title);
       rows.unshift(btns);
@@ -119,8 +117,8 @@ class Reader extends React.Component {
     
     //load more data
     for (var i = 1; i <= 5; i++) {
-      if(this.props.directory[index+i]){
-        parseArticleContent(this.props.novel.directoryUrl,this.props.directory[index+i].url).catch(e=>{
+      if(this.props.directory.get(index+i)){
+        parseArticleContent(this.props.novel.directoryUrl,this.props.directory.getIn([index+i,'url'])).catch(e=>{
           console.log(e);
         });
       }
@@ -177,7 +175,7 @@ class Reader extends React.Component {
 
   
   render() {
-    let current = this.state.directory[this.state.index];
+    let current = this.props.directory.get(this.state.index);
     if (current) {
       
       let content;
@@ -215,9 +213,9 @@ class Reader extends React.Component {
           onScroll={this.handleScroll.bind(this)}
           onEndReached={this.handleEndReached.bind(this)}
           initialListSize={10}
+          pageSize={20}
           onEndReachedThreshold={0}
           scrollRenderAheadDistance={1}
-          pageSize={20}
           dataSource={this.state.dataSource}
           renderRow={(rowData) => {
             if(typeof(rowData) == "string"){
@@ -238,7 +236,7 @@ class Reader extends React.Component {
           backgroundColor:'#9FB2A1'
         }}>
         <Navbar
-        title={current.title}
+        title={current.get('title')}
         left={{
           icon: "ios-arrow-back",
           label: "返回",

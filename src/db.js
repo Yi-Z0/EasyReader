@@ -8,7 +8,7 @@ console.log('db path',Realm.defaultPath);
 global.realmFactory = ()=>{
   return new Realm({
     schema: schema,
-    schemaVersion: 4
+    schemaVersion: 1
   });
 }
 

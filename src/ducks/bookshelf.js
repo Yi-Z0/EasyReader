@@ -7,7 +7,7 @@ export const fetch = createAction(FETCH, () => {
   let realm = realmFactory();
   let novels = realm.objects('Novel');
   return {
-    starNovels:novels.filtered('star=true'),
+    starNovels:novels.filtered('star=true').sorted('starAt',true),
     unstarNovels:novels.filtered('star=false'),
   };
 });

@@ -29,6 +29,7 @@ class Directory extends React.Component {
   handleSwitchStar = ()=>{
     realmFactory().write(()=>{
       this.props.novel.star = !this.props.novel.star;
+      this.props.novel.starAt = new Date();
       this.forceUpdate();
     });
   }
@@ -50,11 +51,11 @@ class Directory extends React.Component {
       this.forceUpdate();
     });
     
-    // Actions.reader({
-    //   novel:this.props.novel,
-    //   directory:this.props.directory,
-    //   index
-    // });
+    Actions.reader({
+      novel:this.props.novel,
+      directory:this.props.params.get('directory'),
+      index
+    });
     
   }
   
@@ -103,11 +104,9 @@ class Directory extends React.Component {
   
   _scrollView;
   render() {
-    console.log('render dir');
-    // this.props.novel;
     let content;
     let arrowLabel = '正序';
-    if (this.props.fetching) {
+    if (this.props.params.get('fetching')) {
       content =  <View style={{
         flex:1,
         alignSelf:'center',
@@ -127,7 +126,7 @@ class Directory extends React.Component {
         directory = directory.reverse();
         arrowLabel = '逆序';
       }
-      
+      console.log(directory);
       content = <List 
       scrollRef={_scrollView=>this._scrollView=_scrollView} 
       items={directory}
