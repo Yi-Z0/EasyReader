@@ -18,8 +18,8 @@ class List extends React.Component {
     return (
       <ListView
         enableEmptySections={true}
-        initialListSize={10}
-        pageSize={10}
+        initialListSize={20}
+        pageSize={1}
         onEndReachedThreshold={0}
         ref={this.props.scrollRef}
         dataSource={(new ImmutableDataSource()).cloneWithRows(this.props.items)}
