@@ -4,10 +4,15 @@ import {View,Text,Dimensions,ListView,TouchableWithoutFeedback,PanResponder,Refr
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
-import {parseArticleContent} from '../../parser';
+import {parseArticleContent} from '../parser';
 import { Button } from 'react-native-elements'
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
+import {updateLastRead} from '../ducks/directory';
+
+//在切换页面的时候,发送通知,切换index
 type Props = {
   novel:Novel,
   navigationState:any,
@@ -16,7 +21,7 @@ type Props = {
 };
 
 const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-export default class Reader extends React.Component {
+class Reader extends React.Component {
   realm:Realm;
   props: Props;
   state: {
@@ -27,6 +32,7 @@ export default class Reader extends React.Component {
     dataSource:ListView.DataSource|null,
     fontSize:number,
     directory:Array<Article>,
+    maxContentLength:number,
   };
   
   constructor(props:Props) {
@@ -37,27 +43,32 @@ export default class Reader extends React.Component {
       navMargin:0,
       fetching:true,
       dataSource:null,
-      fontSize:25,
+      fontSize:24,
       directory:this.props.directory,
+      maxContentLength:0,
     };
     this.realm = realmFactory();
   }
   
-  fetchContent = (index:number)=>{
+  fetchContent = (index:number,refresh:bool = false)=>{
     let article:Article = this.props.directory[index];
     if(!article){
       return;
     }
     this._isMounted&&this.setState({
       navMargin:0,
-      fetching:true
+      fetching:true,
+      maxContentLength:0,
+      index
     });
     
     this.realm.write(()=>{
       this.props.novel.lastReadIndex = index;
-    })
+      this.props.novel.lastReadTitle = article.title;
+    });
+    
 
-    parseArticleContent(article.url).then((content:string)=>{
+    parseArticleContent(this.props.novel.directoryUrl,article.url,refresh).then((content:string)=>{
       let rows = content.split('\r\n');
       
       
@@ -65,14 +76,14 @@ export default class Reader extends React.Component {
       if(this.props.directory[index+1]){
         nextBTN=(
           <Button
-          onPress={e=>this.fetchContent(index+1)}
+          onPress={e=>this.handleGotoArticle(index+1)}
           title='下一章' />
         );
       }
       if(this.props.directory[index-1]){
         beforeBTN=(
           <Button
-          onPress={e=>this.fetchContent(index-1)}
+          onPress={e=>this.handleGotoArticle(index-1)}
           title='上一章' />
         );
       }
@@ -91,6 +102,7 @@ export default class Reader extends React.Component {
         <Text style={{
           fontSize:this.state.fontSize+10,
           lineHeight:this.state.fontSize+15,
+          fontWeight:'300'
         }}>{article.title+"\n"}</Text>
       );
       rows.unshift(title);
@@ -99,39 +111,68 @@ export default class Reader extends React.Component {
       this._isMounted&&this.setState({
         fetching:false,
         dataSource: ds.cloneWithRows(rows),
+        index
       });
     }).catch((e)=>{
       console.log(e);
     });
+    
+    //load more data
+    for (var i = 1; i <= 5; i++) {
+      if(this.props.directory[index+i]){
+        parseArticleContent(this.props.novel.directoryUrl,this.props.directory[index+i].url).catch(e=>{
+          console.log(e);
+        });
+      }
+    }
+    
   }
   
   componentDidMount() {
     this.fetchContent(this.state.index);
   }
   
+  handleGotoArticle = (index:number)=>{
+    this.props.updateLastRead(index);
+    this.fetchContent(index);;
+  }
   lastContentOffsetY = 0;
   handleScroll=(e:Event)=>{
     if(e.nativeEvent.contentOffset.y>100){
-      
-      let difference = e.nativeEvent.contentOffset.y - this.lastContentOffsetY;
-      if(difference>0){
-        if(this.state.navMargin>-64){
-          let val = this.state.navMargin-difference<-64?-64:this.state.navMargin-difference;
-          this.setState({
-            navMargin:val
-          });
-        }
+      if(this.state.maxContentLength>0 
+        
+        &&
+        (e.nativeEvent.contentOffset.y>this.state.maxContentLength
+        || this.state.maxContentLength - e.nativeEvent.contentOffset.y <200
+        )
+      ){
       }else{
-        if(this.state.navMargin!=0){
-          let val = this.state.navMargin-difference>0?0:this.state.navMargin-difference;
-          this.setState({
-            navMargin:val
-          });
+        let difference = e.nativeEvent.contentOffset.y - this.lastContentOffsetY;
+        if(difference>0){
+          if(this.state.navMargin>-64){
+            let val = this.state.navMargin-difference<-64?-64:this.state.navMargin-difference;
+            this.setState({
+              navMargin:val
+            });
+          }
+        }else{
+          if(this.state.navMargin!=0){
+            let val = this.state.navMargin-difference>0?0:this.state.navMargin-difference;
+            this.setState({
+              navMargin:val
+            });
+          }
         }
       }
     }
     
     this.lastContentOffsetY = e.nativeEvent.contentOffset.y;
+  }
+  handleEndReached= (e)=>{
+    this.setState({
+      navMargin:0,
+      maxContentLength:this.lastContentOffsetY
+    });
   }
 
   
@@ -152,31 +193,34 @@ export default class Reader extends React.Component {
         />
         </View>;
       }else{
+        let style = {
+          fontSize:this.state.fontSize,
+          lineHeight:this.state.fontSize*1.35,
+          fontWeight:'300'
+        };
         var {height, width} = Dimensions.get('window');
         //将内容分成多个数组来显示
         content = <ListView
           style={{
-            height:height-this.state.navMargin-64,
-            padding:10,
-            paddingBottom:50
+            height:height,
+            paddingTop:10,
+            paddingLeft:this.state.fontSize-10,
+            paddingRight:this.state.fontSize-15,
           }}
-          onScroll={this.handleScroll}
-          onEndReached={e=>{
-            this.setState({
-              navMargin:0
-            })
+          renderFooter={()=>{
+            return <View style={{
+              height:100
+            }} />
           }}
+          onScroll={this.handleScroll.bind(this)}
+          onEndReached={this.handleEndReached.bind(this)}
           initialListSize={10}
-          onEndReachedThreshold={1}
+          onEndReachedThreshold={0}
           scrollRenderAheadDistance={1}
-          pageSize={10}
+          pageSize={20}
           dataSource={this.state.dataSource}
           renderRow={(rowData) => {
             if(typeof(rowData) == "string"){
-              let style = {
-                fontSize:this.state.fontSize,
-                lineHeight:this.state.fontSize+5,
-              };
               return <Text style={style}>{rowData}</Text>;
             }else{
               return rowData;
@@ -186,7 +230,7 @@ export default class Reader extends React.Component {
           }}
         />
       }
-      
+
       return (
         <Container 
         type="scroll"
@@ -194,6 +238,7 @@ export default class Reader extends React.Component {
           backgroundColor:'#9FB2A1'
         }}>
         <Navbar
+        title={current.title}
         left={{
           icon: "ios-arrow-back",
           label: "返回",
@@ -201,9 +246,9 @@ export default class Reader extends React.Component {
         }}
         right={{
           label: "刷新",
-          onPress: e=>this.setState({
-            refetch:this.state.refetch+1
-          })
+          onPress: e=>{
+            this.fetchContent(this.state.index,true);
+          }
         }}
         style={{
           marginTop:this.state.navMargin
@@ -235,3 +280,18 @@ export default class Reader extends React.Component {
   }
 
 }
+const mapStateToProps = (state, ownProps) => {
+  return {
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateLastRead: bindActionCreators(updateLastRead, dispatch),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Reader);

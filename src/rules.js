@@ -2,6 +2,24 @@ import parse from 'url-parse';
 
 const rules = [
   {
+    domain: `www.luoqiu.com`,
+    encode:'gbk',
+    //工作在搜索引擎提取的url中
+    directoryUrlRegexp: /^\/read\/\d+\/?(index\.html)?$/,
+
+    //工作在搜索引擎提取页面
+    titleRule: /.*(?=最新章节)/,
+    //工作在列表页面
+    authorRule: $=>$("h1.bname").next('div').find('a:eq(0)').text(),
+    //工作在列表页面,返回一个a标签
+    articleLinkRule: $=>$("td>.dccss>a"),
+    //工作在文章页面
+    articleContentRule: $=>{
+      $("#content br").replaceWith("\r\n");
+      return $("#content").text();
+    },
+  },
+  {
     domain: `www.23wx.com`,
     encode:'gbk',
     //工作在搜索引擎提取的url中
@@ -52,13 +70,13 @@ const rules = [
         }
         links[base*4+plus] = link;
       });
-
+  
       for (let link of links) {
         if (link) {
           box.append(link);
         }
       }
-
+  
       return box.find('a');
     },
     //工作在文章页面

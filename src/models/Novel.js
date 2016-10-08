@@ -16,6 +16,8 @@ export default class Novel {
       star:{type: 'bool', default: false},
       created:'date',
       lastReadIndex:{type: 'int', default: 0},
+      lastReadTitle:{type: 'string', default: ''},
+      lastArticleTitle:{type: 'string', default: ''},
     }
   }
 }
