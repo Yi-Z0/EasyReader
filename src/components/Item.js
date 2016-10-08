@@ -9,6 +9,13 @@ export default class Item extends React.Component {
     novel:Novel
   };
   
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log(novel);
+  //   if (nextProps === this.props.novel) {
+  //     return false;
+  //   }
+  // }
+  
   handleClick = (e:Event)=>{
     let realm = realmFactory();
     realm.write(()=>{
@@ -34,6 +41,7 @@ export default class Item extends React.Component {
   };
   
   render() {
+    console.log(`render item ${this.props.novel.title}`);
     return (
       <TouchableHighlight onPress={this.handleClick} underlayColor="#cccccc" style={{
         paddingVertical: 5

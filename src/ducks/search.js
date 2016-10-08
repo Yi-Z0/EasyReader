@@ -40,28 +40,26 @@ const initialState = Immutable.fromJS({
 
 export default createReducer(initialState,{
   [SEARCH](state,action) {
-    return {
-      ...initialState, 
+    return state.merge({
+      novels: [],
       searching: true,
       keywords:action.payload
-    };
+    });
   },
   [FOUND_NOVEL](state,action){
-    if (state.keywords == action.payload.keywords) {
-      let novels = [].concat(state.novels,[action.payload.novel]);
-      return {
-        ...state,
+    if (state.get('keywords') == action.payload.keywords) {
+      let novels = state.get('novels').push(action.payload.novel);
+      return state.merge({
         searching: false,
-        novels:novels,
-      }
+        novels
+      });
     }else{
       return state;
     }
   },
   [FAILED](state,action){
-    return {
-      ...state,
+    return state.merge({
       searching: false,
-    }
+    });
   }
 });
