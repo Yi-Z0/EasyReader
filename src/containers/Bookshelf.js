@@ -32,7 +32,6 @@ class Bookshelf extends React.Component {
   }
   renderRow(novel:Novel,sectionID,rowID){
     return <ListItem
-        key={sectionID}
         component={()=>{
           let lastReadText , lastArticleText;
           if(novel.lastReadTitle){
@@ -70,7 +69,7 @@ class Bookshelf extends React.Component {
     let lists = [];
     if(this.props.starDataSource.getRowCount()){
       lists.push(
-        <View>
+        <View key='starlist'>
         <Text style={{
         fontSize:24,
         fontWeight:'300',
@@ -87,7 +86,7 @@ class Bookshelf extends React.Component {
 
     if(this.props.unstarDataSource.getRowCount()){
       lists.push(
-        <View>
+        <View key='unstarlist'>
         <Text style={{
         fontSize:24,
         fontWeight:'300',
