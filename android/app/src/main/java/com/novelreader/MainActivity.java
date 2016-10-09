@@ -1,4 +1,4 @@
-package com.novelreader;
+package com.yihom.novel;
 
 import com.facebook.react.ReactActivity;
 import com.react.rnspinkit.RNSpinkitPackage;

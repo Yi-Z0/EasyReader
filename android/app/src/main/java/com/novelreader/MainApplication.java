@@ -1,4 +1,4 @@
-package com.novelreader;
+package com.yihom.novel;
 
 import android.app.Application;
 import android.util.Log;
