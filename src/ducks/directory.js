@@ -20,7 +20,7 @@ export const fetchListFromDB = (novel:Novel)=>{
         dispatch(updateListOrder('desc'));
       }
       directory[novel.lastReadIndex].lastRead = true;
-      dispatch(fetchListSuccess(directory));
+      dispatch(fetchListSuccess({directory,lastReadIndex:novel.lastReadIndex}));
     }
   };
 };
@@ -37,7 +37,7 @@ export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
         let beforeUrl = state.getIn(['directory','directoryUrl']);
         if (beforeUrl == novel.directoryUrl) {
           directory[novel.lastReadIndex].lastRead = true;
-          dispatch(fetchListSuccess(directory));
+          dispatch(fetchListSuccess({directory,lastReadIndex:novel.lastReadIndex}));
         }
       });
     }).catch(e=>alert(e));
@@ -82,7 +82,8 @@ export default createReducer(initialState,{
     }else{
       return state.merge({
         fetching:false,
-        directory:action.payload
+        directory:action.payload.directory,
+        lastReadIndex:action.payload.lastReadIndex
       });
     }
   },
