@@ -19,6 +19,7 @@ class Item extends React.Component {
     return true;
   }
   render() {
+    console.log('render ',this.props.item.get('title'));
     let style;
     if(this.props.item.get('lastRead')){
       style = styles.selected;

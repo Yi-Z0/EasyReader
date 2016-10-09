@@ -8,14 +8,12 @@ import dismissKeyboard from 'dismissKeyboard';
 import { SearchBar } from 'react-native-elements'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ImmutableDataSource from 'react-native-immutable-listview-datasource'
-
 
 
 import {search} from '../ducks/search';
 import List from '../components/List';
 
-const ds = new ImmutableDataSource();
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
 class Search extends React.Component {
   
@@ -45,7 +43,7 @@ class Search extends React.Component {
       />
       </View>;
     }else{
-      content = <List ds={ds.cloneWithRows(this.props.params.get('novels'))}/>;
+      content = <List ds={ds.cloneWithRows(this.props.params.get('novels').toArray())}/>;
     }
     
     return (
