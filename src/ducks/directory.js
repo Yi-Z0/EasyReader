@@ -19,8 +19,8 @@ export const fetchListFromDB = (novel:Novel)=>{
       if(novel.lastReadIndex>directory.length/2.0){
         dispatch(updateListOrder('desc'));
       }
+      directory[novel.lastReadIndex].lastRead = true;
       dispatch(fetchListSuccess(directory));
-      dispatch(updateLastRead(novel.lastReadIndex));
     }
   };
 };
@@ -33,12 +33,11 @@ export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
         novel.directory = JSON.stringify(directory);
         novel.isParseDirectory = true;
         novel.lastArticleTitle = directory[directory.length-1].title;
-        if (
-          require('../store').default.getState().getIn(['directory','directoryUrl'])
-          == novel.directoryUrl
-        ) {
+        let state = require('../store').default.getState();
+        let beforeUrl = state.getIn(['directory','directoryUrl']);
+        if (beforeUrl == novel.directoryUrl) {
+          directory[novel.lastReadIndex].lastRead = true;
           dispatch(fetchListSuccess(directory));
-          dispatch(updateLastRead(novel.lastReadIndex));
         }
       });
     }).catch(e=>alert(e));
@@ -73,10 +72,19 @@ export default createReducer(initialState,{
     });
   },
   [FETCH_LIST_SUCCESS](state,action) {
-    return state.merge({
-      fetching:false,
-      directory:action.payload
-    });
+    if (action.payload.length>0 
+      && action.payload.length == state.get('directory').size 
+      && action.payload[action.payload.length-1].title == state.getIn(['directory',state.get('directory').size-1,'title'])
+      ) {
+      return state.merge({
+        fetching:false
+      });
+    }else{
+      return state.merge({
+        fetching:false,
+        directory:action.payload
+      });
+    }
   },
   [UPDATE_LIST_ORDER](state,action) {
     

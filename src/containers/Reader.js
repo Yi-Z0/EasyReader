@@ -248,7 +248,9 @@ class Reader extends React.Component {
             this.fetchContent(this.state.index,true);
           }
         }}
-        
+        style={{
+          marginTop:this.state.navMargin
+        }}
         />
           {content}
         </Container>

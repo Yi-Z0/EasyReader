@@ -8,14 +8,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 
-import {fetchListFromDB,fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
+import {fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
 import {getArticlesFromUrl} from '../../parser';
 import List from './Components/List';
 
 class Directory extends React.Component {
-  componentWillMount() {
-    this.props.fetchListFromDB(this.props.novel);
-  }
   
   componentDidMount() {
     this.props.fetchListFromNetwork(this.props.novel);
@@ -78,21 +75,6 @@ class Directory extends React.Component {
     }
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log(nextProps.params.get('lastReadIndex'));
-  //   if (
-  //     nextProps.params.get('directory') !== this.props.params.get('directory')||
-  //     nextProps.params.get('order') !== this.props.params.get('order') ||
-  //     nextProps.params.get('lastReadIndex') !== this.props.params.get('lastReadIndex') 
-  //   ) {
-  //     
-  //     
-  //     return false;
-  //   }
-  //   
-  //   return true;
-  // }
-  // 
   componentWillReceiveProps(nextProps) {
     if( nextProps.params.get('lastReadIndex')!=this.props.params.get('lastReadIndex')){
       let index = this.getCurrentScrollIndex(nextProps);
@@ -175,7 +157,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchListFromDB: bindActionCreators(fetchListFromDB, dispatch),
     fetchListFromNetwork: bindActionCreators(fetchListFromNetwork, dispatch),
     updateListOrder: bindActionCreators(updateListOrder, dispatch),
     updateLastRead: bindActionCreators(updateLastRead, dispatch),

@@ -10,6 +10,7 @@ import { bindActionCreators } from 'redux';
 import { ListView } from 'realm/react-native';
 
 import {fetch} from '../ducks/bookshelf';
+import {fetchListFromDB} from '../ducks/directory';
 
 let styles = StyleSheet.create({
   rowItem: {
@@ -47,7 +48,8 @@ class Bookshelf extends React.Component {
           }
           return (
             <TouchableWithoutFeedback onPress={e=>{
-              Actions.directory({novel:novel})
+              this.props.fetchListFromDB(novel);
+              Actions.directory({novel:novel});
             }}>
             <View style={styles.rowItem}>
             <Text style={styles.rowTitle}>{novel.title}</Text>
@@ -77,7 +79,7 @@ class Bookshelf extends React.Component {
       <ListView
         enableEmptySections={true}
         dataSource={this.props.starDataSource}
-        renderRow={this.renderRow}
+        renderRow={this.renderRow.bind(this)}
       />
     </View>);
     }
@@ -94,7 +96,7 @@ class Bookshelf extends React.Component {
         <ListView
           enableEmptySections={true}
           dataSource={this.props.unstarDataSource}
-          renderRow={this.renderRow}
+          renderRow={this.renderRow.bind(this)}
         />
     </View>);
     }
@@ -127,7 +129,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetch: bindActionCreators(fetch, dispatch)
+    fetch: bindActionCreators(fetch, dispatch),
+    fetchListFromDB: bindActionCreators(fetchListFromDB, dispatch),
   };
 };
 

@@ -1,24 +1,18 @@
 //@flow
+
 import {applyMiddleware, createStore,compose} from 'redux';
 import thunk from 'redux-thunk';
-import devTools from 'remote-redux-devtools';
 import { Platform } from 'react-native';
 import Immutable from 'immutable';
 import {reducers} from './ducks';
 
+import { composeWithDevTools } from 'remote-redux-devtools';
 
 const store = createStore(reducers,
   Immutable.fromJS({}),
-  compose(
-    applyMiddleware(
+  composeWithDevTools(applyMiddleware(
       thunk
-    ),
-    devTools({
-      name: Platform.OS,
-      hostname: 'localhost',
-      port: 5678
-    })
-  )
+    ))
 );
 
 // 
