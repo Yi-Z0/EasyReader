@@ -8,6 +8,7 @@ import { Container, Navbar } from 'navbar-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ListView } from 'realm/react-native';
+import { SearchBar } from 'react-native-elements'
 
 import {fetch} from '../ducks/bookshelf';
 import {fetchListFromDB} from '../ducks/directory';
@@ -66,9 +67,9 @@ class Bookshelf extends React.Component {
       />;
   }
   render() {
-    let starList,unstarList;
+    let lists = [];
     if(this.props.starDataSource.getRowCount()){
-      starList = (
+      lists.push(
         <View>
         <Text style={{
         fontSize:24,
@@ -85,7 +86,7 @@ class Bookshelf extends React.Component {
     }
 
     if(this.props.unstarDataSource.getRowCount()){
-      unstarList = (
+      lists.push(
         <View>
         <Text style={{
         fontSize:24,
@@ -100,6 +101,7 @@ class Bookshelf extends React.Component {
         />
     </View>);
     }
+
     return (
       <Container>
           <Navbar
@@ -109,11 +111,19 @@ class Bookshelf extends React.Component {
                   iconSize: 20,
                   onPress: Actions.search
               }}
+              left={{
+                label:" "
+              }}
           />
-          <ScrollView>
-          {starList}
-          {unstarList}
-          </ScrollView>
+         <SearchBar
+            lightTheme
+            round
+            onFocus={Actions.search}
+            placeholder='输入书名,作者,主角等进行搜索' />
+
+            <ScrollView>
+            {lists}
+            </ScrollView>
       </Container>
     );
   }
