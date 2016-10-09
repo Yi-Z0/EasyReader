@@ -126,7 +126,7 @@ class Directory extends React.Component {
         directory = directory.reverse();
         arrowLabel = '逆序';
       }
-      console.log(directory);
+
       content = <List 
       scrollRef={_scrollView=>this._scrollView=_scrollView} 
       items={directory}

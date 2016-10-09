@@ -21,6 +21,7 @@ class List extends React.Component {
         initialListSize={20}
         pageSize={1}
         onEndReachedThreshold={0}
+        scrollRenderAheadDistance={100}
         ref={this.props.scrollRef}
         dataSource={(new ImmutableDataSource()).cloneWithRows(this.props.items)}
         renderRow={(rowData,_,rowID)=><Item onPress={this.props.handleClickArticle.bind(null,rowData,rowID)} item={rowData}/>}

@@ -193,7 +193,7 @@ class Reader extends React.Component {
       }else{
         let style = {
           fontSize:this.state.fontSize,
-          lineHeight:this.state.fontSize*1.35,
+          lineHeight:Math.ceil(this.state.fontSize*1.35),
           fontWeight:'300'
         };
         var {height, width} = Dimensions.get('window');
@@ -213,9 +213,9 @@ class Reader extends React.Component {
           onScroll={this.handleScroll.bind(this)}
           onEndReached={this.handleEndReached.bind(this)}
           initialListSize={10}
-          pageSize={20}
+          pageSize={40}
           onEndReachedThreshold={0}
-          scrollRenderAheadDistance={1}
+          scrollRenderAheadDistance={100}
           dataSource={this.state.dataSource}
           renderRow={(rowData) => {
             if(typeof(rowData) == "string"){
@@ -248,9 +248,7 @@ class Reader extends React.Component {
             this.fetchContent(this.state.index,true);
           }
         }}
-        style={{
-          marginTop:this.state.navMargin
-        }}
+        
         />
           {content}
         </Container>
