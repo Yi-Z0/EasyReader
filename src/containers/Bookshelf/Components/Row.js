@@ -51,6 +51,9 @@ class Row extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+      if (nextState.hide != this.state.hide) {
+        return true;
+      }
       if (
         nextProps.novel.isValid()
         &&
@@ -62,6 +65,7 @@ class Row extends Component {
 
         ) {
         return false;
+
       }
 
       return true;
