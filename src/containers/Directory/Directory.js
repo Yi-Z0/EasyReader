@@ -1,6 +1,6 @@
 //@flow
 import React from 'react';
-import {View} from 'react-native';
+import {View,InteractionManager} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
@@ -16,11 +16,7 @@ class Directory extends React.Component {
   
   componentDidMount() {
     this.props.fetchListFromNetwork(this.props.novel);
-    let self = this;
-    setTimeout(function(){
-      self.scrollTo();
-    },100);
-    
+    this.scrollTo();
   }
   
   handleSwitchStar = ()=>{
@@ -62,7 +58,9 @@ class Directory extends React.Component {
       if(index<0){
         index = 0;
       }
-      this._scrollView.scrollTo({y:index*49,animated:false});
+      InteractionManager.runAfterInteractions(() => {
+        this._scrollView.scrollTo({y:index*49,animated:false});
+      });
       this.lastScrollIndex = index;
     }
   };
