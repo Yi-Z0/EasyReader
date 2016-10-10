@@ -3,8 +3,11 @@
 import React from 'react';
 import {TouchableHighlight,Text,View} from 'react-native';
 import {Actions} from 'react-native-router-flux';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-export default class Item extends React.Component {
+import {fetchListFromDB} from '../ducks/directory';
+class Item extends React.Component {
   props:{
     novel:Novel
   };
@@ -29,7 +32,9 @@ export default class Item extends React.Component {
         novel = novels[0];
       }
       //save novel to realm and redirect when save success
-      Actions.directory({novel:novel})
+
+      this.props.fetchListFromDB(novel);
+      Actions.directory({novel});
     });
   };
   
@@ -74,3 +79,14 @@ export default class Item extends React.Component {
   }
 
 }
+
+export default connect(
+  ()=>{
+    return {}
+  },
+  (dispatch)=>{
+    return {
+      fetchListFromDB: bindActionCreators(fetchListFromDB, dispatch)
+    };
+  }
+)(Item);

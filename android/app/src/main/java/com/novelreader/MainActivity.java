@@ -1,7 +1,6 @@
-package com.novelreader;
+package com.yihom.novel;
 
 import com.facebook.react.ReactActivity;
-import io.realm.react.RealmReactPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
 
 public class MainActivity extends ReactActivity {

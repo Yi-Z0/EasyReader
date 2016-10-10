@@ -6,7 +6,7 @@ declare class Realm {
   addListener(event:string,callback:()=>void):void,
   removeAllListeners():void,
 };
-
+declare type func = ()=>void;
 declare type Novel = {
   directoryUrl:string,
   title:string,
@@ -17,6 +17,14 @@ declare type Novel = {
   desc:string,
   star:bool,
   created:Date,
+  lastReadIndex:number,
+  lastReadTitle:string,
+  lastArticleTitle:string,
+}
+
+declare type Article = {
+  url:string,
+  title:string,
 }
 
 declare function realmFactory(): Realm;

@@ -1,74 +1,94 @@
 //@flow
 import React from 'react';
-import {View,Text,ListView} from 'react-native';
+import {View} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
+import { Container, Navbar } from 'navbar-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
+
+import {fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
 import {getArticlesFromUrl} from '../../parser';
-import Row from './Components/Row';
+import List from './Components/List';
 
-type Props = {
-  novel:Novel,
-  navigationState:any,
-};
-let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.url != r2.url});
-
-export default class Directory extends React.Component {
-  realm:Realm;
-  props: Props;
-  state: {
-    fetching: bool,
-    error:string,
-    dataSource:any,
-    desc:bool,
-  };
-
-  constructor(props:Props) {
-    super(props);
-    this.state = {
-      fetching:true,
-      error:'',
-      dataSource:null,
-      desc:false
-    };
-    this.realm = realmFactory();
+class Directory extends React.Component {
+  
+  componentDidMount() {
+    this.props.fetchListFromNetwork(this.props.novel);
+    let self = this;
+    setTimeout(function(){
+      self.scrollTo();
+    },100);
+    
   }
   
-  componentWillMount() {
-    this.props.navigationState.title = this.props.novel.title;
-    if (this.props.novel.isParseDirectory) {
-      this.setState({
-        fetching:false,
-        dataSource:ds.cloneWithRows(JSON.parse(this.props.novel.directory)),
-      });
+  handleSwitchStar = ()=>{
+    realmFactory().write(()=>{
+      this.props.novel.star = !this.props.novel.star;
+      this.props.novel.starAt = new Date();
+      this.forceUpdate();
+    });
+  }
+  
+  handleSwitchOrder = ()=>{
+    this.props.updateListOrder();
+  }
+  
+  handleClickArticle = (article:Article,rowIndex:number)=>{
+    let index = parseInt(rowIndex);
+    if(this.props.params.get('order') == 'desc'){
+      index = this.props.params.get('directory').size - index -1;
     }
     
-    getArticlesFromUrl(this.props.novel.directoryUrl).then((directory)=>{
-      this.realm.write(()=>{
-        this.props.novel.directory = JSON.stringify(directory);
-        this.props.novel.isParseDirectory = true;
-        this._isMounted && this.setState({
-          fetching:false,
-          dataSource:ds.cloneWithRows(directory),
-        });
-      });
-    })
-      
+    realmFactory().write(()=>{
+      this.props.novel.lastReadIndex = index;
+      this.props.novel.lastReadTitle = article.get('title');
+      this.props.updateLastRead(index);
+      this.forceUpdate();
+    });
+    
+    Actions.reader({
+      novel:this.props.novel,
+      directory:this.props.params.get('directory'),
+      index
+    });
+    
   }
   
-  handleClick(id:number){
-    console.log(id);
+  lastScrollIndex = 0;
+  scrollTo=(index = this.getCurrentScrollIndex()-5)=>{
+    if(this._scrollView ){
+      if(index<0){
+        index = 0;
+      }
+      this._scrollView.scrollTo({y:index*49,animated:false});
+      this.lastScrollIndex = index;
+    }
+  };
+  
+  getCurrentScrollIndex=(props = this.props)=>{
+    if(props.params.get('order') == 'desc'){
+      return props.params.get('directory').size-props.params.get('lastReadIndex')-3;
+    }else{
+      return props.params.get('lastReadIndex');
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if( nextProps.params.get('lastReadIndex')!=this.props.params.get('lastReadIndex')){
+      let index = this.getCurrentScrollIndex(nextProps);
+      if(Math.abs(index-this.lastScrollIndex)>=5){
+        this.scrollTo(index);
+      }
+    }
   }
   
-  _isMounted = true;
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-  
+  _scrollView;
   render() {
-    // this.props.novel;
     let content;
-    if (this.state.fetching) {
+    let arrowLabel = '正序';
+    if (this.props.params.get('fetching')) {
       content =  <View style={{
         flex:1,
         alignSelf:'center',
@@ -83,22 +103,67 @@ export default class Directory extends React.Component {
       />
       </View>;
     }else{
-      content = <ListView
-        dataSource={this.state.dataSource}
-        renderRow={(rowData,sectionID,rowID) => {
-            return <Row onPress={this.handleClick} {...rowData} id={rowID}/>;
-        }}
-      />;
+      let directory = this.props.params.get('directory');
+      if (this.props.params.get('order') == 'desc') {
+        directory = directory.reverse();
+        arrowLabel = '逆序';
+      }
+
+      content = <List 
+      scrollRef={_scrollView=>this._scrollView=_scrollView} 
+      items={directory}
+      handleClickArticle={this.handleClickArticle}
+      id={this.props.novel.directoryUrl}
+      />
     }
     
+    let starIcon = "star-o";
+    if(this.props.novel.star){
+      starIcon = "star";
+    }
     return (
-      <View style={{
-        flex: 1,
-        marginTop:64
-      }}>
-      {content}
-      </View>
+      <Container
+      loading={false}
+      >
+          <Navbar
+              title={this.props.novel.title}
+              left={{
+                  icon: "ios-arrow-back",
+                  label: "返回",
+                  onPress: Actions.pop
+              }}
+              right={[{
+                  icon: starIcon,
+                  iconFamily: "FontAwesome",
+                  iconSize: 20,
+                  onPress: this.handleSwitchStar
+              },{
+                  label: arrowLabel,
+                  onPress: this.handleSwitchOrder
+              }]}
+          />
+          {content}
+      </Container>
     );
   }
-
 }
+
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    params : state.get('directory')
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchListFromNetwork: bindActionCreators(fetchListFromNetwork, dispatch),
+    updateListOrder: bindActionCreators(updateListOrder, dispatch),
+    updateLastRead: bindActionCreators(updateLastRead, dispatch),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Directory);

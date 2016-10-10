@@ -4,6 +4,7 @@ import cheerio from 'cheerio';
 import parse from 'url-parse';
 import events from 'events';
 import {getRuleByUrl} from '../rules';
+import RNFetchBlob from 'react-native-fetch-blob';
 global.Buffer = require('buffer').Buffer;
 // var detectCharacterEncoding = require('detect-character-encoding');
 var iconv = require('iconv-lite');
@@ -65,28 +66,34 @@ function fetchUrl(url: string): Promise < cheerio > {
 
     let task = ()=>{
       // url = url.replace(/^http:\/\//,'https://');
-      return fetch(url, {
-       headers: {
-         referrer: url,
-         userAgent: getRandomAgent(),
-       },
-       timeout: 10000
-     }).then(res => {
-       return res.arrayBuffer();
-      //  return res.text();
-     }).then(html => {
+      return RNFetchBlob.config({
+        timeout: 10000,
+      }).fetch(
+        'GET',
+        url,
+        {
+          referrer: url,
+          userAgent: getRandomAgent(),
+          'RNFB-Response' : 'base64'
+        }
+     ).then(res => {
+      //  alert(res._bodyBlob);
+      //  return res.arrayBuffer();
+       return res.base64();
+     }).then(str => {
        let rule = getRuleByUrl(url);
        let encode = 'utf8';
-       if (rule) {
+       if (rule&&rule.encode) {
          encode = rule.encode;
        }
-       var buf = new Buffer(html);
-       let str = iconv.decode(buf, encode);
-       return cheerio.load(str);
+       let buf = Buffer.from(str,'base64');
+       let html = iconv.decode(buf, encode);
+       return cheerio.load(html);
      }).then($ => {
        resolve($);
        return Promise.resolve($);
      }).catch(e => {
+      //  alert(e);
        reject(e);
        return Promise.reject(e);
      });

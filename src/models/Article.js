@@ -3,10 +3,10 @@ export default class Article {
     name: 'Article',
     primaryKey: 'url',
     properties: {
+      directoryUrl:'string',
       url: 'string',
       title: 'string',
       content: 'string',
-      full: 'bool',
     }
   }
 }

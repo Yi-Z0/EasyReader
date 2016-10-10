@@ -2,6 +2,24 @@ import parse from 'url-parse';
 
 const rules = [
   {
+    domain: `www.luoqiu.com`,
+    encode:'gbk',
+    //工作在搜索引擎提取的url中
+    directoryUrlRegexp: /^\/read\/\d+\/?(index\.html)?$/,
+
+    //工作在搜索引擎提取页面
+    titleRule: /.*(?=最新章节)/,
+    //工作在列表页面
+    authorRule: $=>$("h1.bname").next('div').find('a:eq(0)').text(),
+    //工作在列表页面,返回一个a标签
+    articleLinkRule: $=>$("td>.dccss>a"),
+    //工作在文章页面
+    articleContentRule: $=>{
+      $("#content br").replaceWith("\r\n");
+      return $("#content").text();
+    },
+  },
+  {
     domain: `www.23wx.com`,
     encode:'gbk',
     //工作在搜索引擎提取的url中
@@ -13,7 +31,10 @@ const rules = [
     //工作在列表页面,返回一个a标签
     articleLinkRule: $=>$("td.L>a"),
     //工作在文章页面
-    articleContentRule: $=>$("#contents").text(),
+    articleContentRule: $=>{
+      $("#contents br").replaceWith("\r\n");
+      return $("#contents").text();
+    },
   },
   {
     domain: `www.bxwx8.org`,
@@ -49,17 +70,20 @@ const rules = [
         }
         links[base*4+plus] = link;
       });
-
+  
       for (let link of links) {
         if (link) {
           box.append(link);
         }
       }
-
+  
       return box.find('a');
     },
     //工作在文章页面
-    articleContentRule: $ => $("#content").text(),
+    articleContentRule: $ => {
+      $("#content br").replaceWith("\r\n");
+      return $("#content").text();
+    },
   },
   {
     domain: `www.biquge.tw`,
@@ -73,11 +97,17 @@ const rules = [
     //工作在列表页面,返回一个a标签
     articleLinkRule: $=>$("#list dd>a"),
     //工作在文章页面
-    articleContentRule: $=>$("#content").text().replace('readx();&nbsp;&nbsp;&nbsp;&nbsp;',''),
+    articleContentRule: $=>{
+      $("#content br").replaceWith("\r\n");
+      return $("#content").text().replace('readx();&nbsp;&nbsp;&nbsp;&nbsp;','');
+    },
   },
 ];
 export default rules;
 
+function replaceBR(html:string){
+  html.replace(/<br>/)
+}
 export function getRuleByUrl(url:string):Rule|null{
   let urlObject = parse(url);
   let domain = urlObject.hostname;
