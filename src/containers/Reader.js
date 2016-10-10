@@ -113,16 +113,17 @@ class Reader extends React.Component {
       });
     }).catch((e)=>{
       console.log(e);
+    }).done(()=>{
+      //load more data
+      for (var i = 1; i <= 5; i++) {
+        if(this.props.directory.get(index+i)){
+          parseArticleContent(this.props.novel.directoryUrl,this.props.directory.getIn([index+i,'url'])).catch(e=>{
+            console.log(e);
+          });
+        }
+      }
     });
     
-    //load more data
-    for (var i = 1; i <= 5; i++) {
-      if(this.props.directory.get(index+i)){
-        parseArticleContent(this.props.novel.directoryUrl,this.props.directory.getIn([index+i,'url'])).catch(e=>{
-          console.log(e);
-        });
-      }
-    }
     
   }
   
@@ -303,7 +304,7 @@ function parseLine(str,width,cleanEmptyLine = true){
     for(var s of str){
         let code = s.charCodeAt();
         if (code == 10 || code == 13) {
-            if (currentLine.trim()=='' && lines[lines.length-1].trim() == '') {
+            if (currentLine.trim()=='' && lines.length>1 && lines[lines.length-1].trim() == '') {
               //过滤空行
             }else{
               lines.push(currentLine);

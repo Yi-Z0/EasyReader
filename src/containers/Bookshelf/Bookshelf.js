@@ -10,52 +10,20 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ListView } from 'realm/react-native';
 import { Button } from 'react-native-elements'
-import { SwipeRow } from 'react-native-swipe-list-view';
 
-
-import {fetch} from '../ducks/bookshelf';
-import {fetchListFromDB} from '../ducks/directory';
+import Row from './Components/Row';
+import {fetch} from '../../ducks/bookshelf';
+import {fetchListFromDB} from '../../ducks/directory';
 
 let styles = StyleSheet.create({
-  rowItem: {
-    padding:10,
-    backgroundColor:'#ffffff'
-  },
-  rowTitle: {
-    fontSize:24,
-  },
-  rowSubTitle:{
-    color:'#666666'
-  },
   listTitle:{
     fontSize:24,
     fontWeight:'300',
     marginTop:20,
     marginBottom:10,
   },
-
-  swipeView:{
-    alignItems: 'center',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 15,
-    backgroundColor:'red',
-  },
-  deleteBtn:{
-    color:"#ffffff"
-  }
 });
 
-let styleSwipeRow = {
-    borderBottomWidth: 1,
-    borderColor:'#cccccc'
-  };
-let styleSwipeFirstRow = {
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
-    borderColor:'#cccccc'
-  };
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 class Bookshelf extends React.Component {
   componentWillMount() {
@@ -63,7 +31,6 @@ class Bookshelf extends React.Component {
   }
 
   deleteNovel = (novel)=>{
-    console.log(novel,'will be delete');
     let realm = realmFactory();
     realm.write(()=>{
       let directoryUrl = novel.directoryUrl;
@@ -75,47 +42,14 @@ class Bookshelf extends React.Component {
 
   }
   renderRow = (novel:Novel,sectionID,rowID)=>{
-    let lastReadText , lastArticleText;
-          if(novel.lastReadTitle){
-            lastReadText = <Text
-            style={styles.rowSubTitle}
-            numberOfLines={1}
-            >已读 : {novel.lastReadTitle}</Text>
-          }
-          if(novel.lastArticleTitle){
-            lastArticleText = <Text
-            style={styles.rowSubTitle}
-            numberOfLines={1}
-            >最新 : {novel.lastArticleTitle}</Text>
-          }
-
-          return (
-
-            <SwipeRow
-            style={rowID==0?styleSwipeFirstRow:styleSwipeRow}
-            disableRightSwipe
-            rightOpenValue={-65}
-            onRowPress={e=>{
-              this.props.fetchListFromDB(novel);
-              Actions.directory({novel:novel});
-            }}
-          >
-            <View style={styles.swipeView}>
-              <Text></Text>
-              <Text onPress={this.deleteNovel.bind(null,novel)} style={styles.deleteBtn}>删除</Text>
-            </View>
-            <View style={styles.rowItem}>
-              <Text style={styles.rowTitle}>{novel.title}</Text>
-              {lastArticleText}
-              {lastReadText}
-              <Text 
-              style={styles.rowSubTitle}
-              numberOfLines={1}>来源 : {novel.directoryUrl}</Text>
-            </View>
-          </SwipeRow>
-
-            
-          );
+    return (<Row
+      novel={novel}
+      onPress={e=>{
+        this.props.fetchListFromDB(novel);
+        Actions.directory({novel:novel});
+      }}
+      onDelete={this.deleteNovel.bind(null,novel)}
+      />);
   }
 
   renderListView=(starDataSource,title)=>{
