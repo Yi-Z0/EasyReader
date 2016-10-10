@@ -69,14 +69,7 @@ class Reader extends React.Component {
     parseArticleContent(this.props.novel.directoryUrl,article.get('url'),refresh).then((content:string)=>{
       var {height, width} = Dimensions.get('window');
       lineWidth = Math.floor((width - this.state.fontSize)*2/this.state.fontSize);
-      console.log(lineWidth);
       let rows = parseLine(content,lineWidth);
-      rows = rows.filter(row=>{
-        if (row.trim() == '') {
-          return false;
-        }
-        return true;
-      })
       let nextBTN,beforeBTN;
       if(this.props.directory.get(index+1)){
         nextBTN=(
@@ -200,6 +193,7 @@ class Reader extends React.Component {
       }else{
         let style = {
           fontSize:this.state.fontSize,
+          height:Math.ceil(this.state.fontSize*1.35),
           lineHeight:Math.ceil(this.state.fontSize*1.35),
           fontWeight:'300'
         };
@@ -301,15 +295,22 @@ export default connect(
 )(Reader);
 
 
-function parseLine(str,width){
+function parseLine(str,width,cleanEmptyLine = true){
+    str.replace("\t",'  ');
     var lines = [];
     var currentLine = '';
     var currentLineWidth = 0;
     for(var s of str){
-        if (s == '\n') {
-            lines.push(currentLine);
+        let code = s.charCodeAt();
+        if (code == 10 || code == 13) {
+            if (currentLine.trim()=='' && lines[lines.length-1].trim() == '') {
+              //过滤空行
+            }else{
+              lines.push(currentLine);
+            }
             currentLine = '';
             currentLineWidth = 0;
+            continue;
         }
 
         var sWidth = stringWidth(s);
