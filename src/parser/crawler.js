@@ -1,5 +1,5 @@
 //@flow
-import {View,InteractionManager} from 'react-native';
+import {InteractionManager} from 'react-native';
 
 import fetch from 'fbjs/lib/fetch';
 import cheerio from 'cheerio';

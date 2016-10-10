@@ -1,9 +1,18 @@
 //@flow
 import React from 'react';
-import {View,Text,Dimensions,ListView,TouchableWithoutFeedback,PanResponder,RefreshControl} from 'react-native';
+import {
+  View,
+  Text,
+  Dimensions,
+  ListView,
+  TouchableWithoutFeedback,
+  PanResponder,
+  RefreshControl,
+} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
-import { Container, Navbar } from 'navbar-native';
+import { Container,
+ Navbar } from 'navbar-native';
 import {parseArticleContent} from '../parser';
 import { Button } from 'react-native-elements'
 import { connect } from 'react-redux';

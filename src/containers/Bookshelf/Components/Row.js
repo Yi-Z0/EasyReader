@@ -50,12 +50,33 @@ class Row extends Component {
       };
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+      if (
+        nextProps.novel.isValid()
+        &&
+        nextProps.novel.directoryUrl == this.props.novel.directoryUrl
+        &&
+        nextProps.novel.lastReadIndex == this.lastRenderParams.lastReadIndex
+        &&
+        nextProps.novel.lastArticleTitle == this.lastRenderParams.lastArticleTitle
+
+        ) {
+        return false;
+      }
+
+      return true;
+    }
     props:{
         onDelete:func,
         onPress:func,
         novel:Novel
     };
+
+
+  lastRenderParams = {};
   render() {
+    this.lastRenderParams.lastReadIndex = this.props.novel.lastReadIndex
+    this.lastRenderParams.lastArticleTitle = this.props.novel.lastArticleTitle
 
     let novel = this.props.novel;
     if (!novel.isValid()) {
@@ -96,7 +117,7 @@ class Row extends Component {
           <Text onPress={e=>{
             Animated.timing(this.state.fadeInOpacity, {
                 toValue: 0, // 目标值
-                duration: 1000, // 动画时间
+                duration: 500, // 动画时间
                 easing: Easing.linear // 缓动函数
             }).start(() => {
                 this.setState({

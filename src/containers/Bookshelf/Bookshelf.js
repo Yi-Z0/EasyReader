@@ -1,7 +1,14 @@
 //@flow
 import React from 'react';
-import {View,Text,Animated,
-    Easing,StyleSheet,ScrollView} from 'react-native';
+import {
+  View,
+  Text,
+  Animated,
+  Easing,
+  StyleSheet,
+  ScrollView,
+  InteractionManager,
+} from 'react-native';
 import { List,ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Actions} from 'react-native-router-flux';
@@ -22,6 +29,10 @@ let styles = StyleSheet.create({
     marginTop:20,
     marginBottom:10,
   },
+  titleView:{
+    borderBottomWidth: 1,
+    borderColor:'#cccccc'
+  }
 });
 
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
@@ -31,14 +42,16 @@ class Bookshelf extends React.Component {
   }
 
   deleteNovel = (novel)=>{
-    let realm = realmFactory();
-    realm.write(()=>{
-      let directoryUrl = novel.directoryUrl;
-      realm.delete(novel);
+    InteractionManager.runAfterInteractions(()=>{
+      let realm = realmFactory();
+      realm.write(()=>{
+        let directoryUrl = novel.directoryUrl;
+        realm.delete(novel);
 
-      let allArticles = realm.objects('Article').filtered(`directoryUrl="${directoryUrl}"`)
-      realm.delete(allArticles); // Deletes all articles
-    });
+        let allArticles = realm.objects('Article').filtered(`directoryUrl="${directoryUrl}"`)
+        realm.delete(allArticles); // Deletes all articles
+      });
+    })
 
   }
   renderRow = (novel:Novel,sectionID,rowID)=>{
@@ -54,7 +67,9 @@ class Bookshelf extends React.Component {
 
   renderListView=(starDataSource,title)=>{
     return (<View key={title}>
+          <View style={styles.titleView}>
             <Text style={styles.listTitle}>{title}</Text>
+          </View>
           <ListView
             enableEmptySections={true}
             dataSource={starDataSource}
