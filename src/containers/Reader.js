@@ -6,9 +6,9 @@ import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
 import {parseArticleContent} from '../parser';
 import { Button } from 'react-native-elements'
-
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import stringWidth from 'string-width';
 
 import {updateLastRead} from '../ducks/directory';
 
@@ -67,9 +67,16 @@ class Reader extends React.Component {
     
 
     parseArticleContent(this.props.novel.directoryUrl,article.get('url'),refresh).then((content:string)=>{
-      let rows = content.split('\r\n');
-      
-      
+      var {height, width} = Dimensions.get('window');
+      lineWidth = Math.floor((width - this.state.fontSize)*2/this.state.fontSize);
+      console.log(lineWidth);
+      let rows = parseLine(content,lineWidth);
+      rows = rows.filter(row=>{
+        if (row.trim() == '') {
+          return false;
+        }
+        return true;
+      })
       let nextBTN,beforeBTN;
       if(this.props.directory.get(index+1)){
         nextBTN=(
@@ -203,7 +210,6 @@ class Reader extends React.Component {
             height:height,
             paddingTop:10,
             paddingLeft:this.state.fontSize-10,
-            paddingRight:this.state.fontSize-15,
           }}
           renderFooter={()=>{
             return <View style={{
@@ -212,10 +218,10 @@ class Reader extends React.Component {
           }}
           onScroll={this.handleScroll.bind(this)}
           onEndReached={this.handleEndReached.bind(this)}
-          initialListSize={10}
+          initialListSize={40}
           pageSize={40}
-          onEndReachedThreshold={0}
-          scrollRenderAheadDistance={100}
+          onEndReachedThreshold={100}
+          scrollRenderAheadDistance={500}
           dataSource={this.state.dataSource}
           renderRow={(rowData) => {
             if(typeof(rowData) == "string"){
@@ -293,3 +299,29 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Reader);
+
+
+function parseLine(str,width){
+    var lines = [];
+    var currentLine = '';
+    var currentLineWidth = 0;
+    for(var s of str){
+        if (s == '\n') {
+            lines.push(currentLine);
+            currentLine = '';
+            currentLineWidth = 0;
+        }
+
+        var sWidth = stringWidth(s);
+        if (currentLineWidth+sWidth>width) {
+            lines.push(currentLine);
+            currentLine = '';
+            currentLineWidth = 0;
+        }
+
+        currentLine += s;
+        currentLineWidth += sWidth;
+    }
+
+    return lines;
+}
