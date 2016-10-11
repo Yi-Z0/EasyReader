@@ -9,217 +9,217 @@ import {
   PanResponder,
   RefreshControl,
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
+import { Actions } from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
-import { Container,
- Navbar } from 'navbar-native';
-import {parseArticleContent} from '../parser';
+import {
+  Container,
+  Navbar
+} from 'navbar-native';
+import { parseArticleContent } from '../parser';
 import { Button } from 'react-native-elements'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import stringWidth from 'string-width';
 
-import {updateLastRead} from '../ducks/directory';
+import { updateLastRead } from '../ducks/directory';
+import stringWidth from '../utils/stringWidth';
 
 //在切换页面的时候,发送通知,切换index
 type Props = {
-  novel:Novel,
-  navigationState:any,
-  directory:Array<Article>,
-  index:number, // start
+  novel: Novel,
+  navigationState: any,
+  directory: Array<Article>,
+  index: number, // start
 };
 
-const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
 class Reader extends React.Component {
-  realm:Realm;
+  realm: Realm;
   props: Props;
   state: {
-    index:number,//current
-    refetch:number,
-    navMargin:number,
-    fetching:bool,
-    dataSource:ListView.DataSource|null,
-    fontSize:number,
-    maxContentLength:number,
+    index: number,//current
+    refetch: number,
+    navMargin: number,
+    fetching: bool,
+    dataSource: ListView.DataSource | null,
+    fontSize: number,
+    maxContentLength: number,
   };
-  
-  constructor(props:Props) {
+
+  constructor(props: Props) {
     super(props);
     this.state = {
-      index:parseInt(props.index),
-      refetch:0,
-      navMargin:0,
-      fetching:true,
-      dataSource:null,
-      fontSize:24,
-      maxContentLength:0,
+      index: parseInt(props.index),
+      refetch: 0,
+      navMargin: 0,
+      fetching: true,
+      dataSource: null,
+      fontSize: 24,
+      maxContentLength: 0,
     };
     this.realm = realmFactory();
   }
-  
-  fetchContent = (index:number,refresh:bool = false)=>{
-    let article:Article = this.props.directory.get(index);
-    if(!article){
+
+  fetchContent = (index: number, refresh: bool = false) => {
+    let article: Article = this.props.directory.get(index);
+    if (!article) {
       return;
     }
-    this._isMounted&&this.setState({
-      navMargin:0,
-      fetching:true,
-      maxContentLength:0,
+    this._isMounted && this.setState({
+      navMargin: 0,
+      fetching: true,
+      maxContentLength: 0,
       index
     });
-    
-    this.realm.write(()=>{
+
+    this.realm.write(() => {
       this.props.novel.lastReadIndex = index;
       this.props.novel.lastReadTitle = article.get('title');
     });
-    
 
-    parseArticleContent(this.props.novel.directoryUrl,article.get('url'),refresh).then((content:string)=>{
+
+    parseArticleContent(this.props.novel.directoryUrl, article.get('url'), refresh).then((content: string) => {
       var {height, width} = Dimensions.get('window');
-      lineWidth = Math.floor((width - this.state.fontSize)*2/this.state.fontSize);
-      let rows = parseLine(content,lineWidth);
-      let nextBTN,beforeBTN;
-      if(this.props.directory.get(index+1)){
-        nextBTN=(
+      lineWidth = Math.floor((width - this.state.fontSize) * 2 / this.state.fontSize);
+      let rows = parseLine(content, lineWidth);
+      let nextBTN, beforeBTN;
+      if (this.props.directory.get(index + 1)) {
+        nextBTN = (
           <Button
-          onPress={e=>this.handleGotoArticle(index+1)}
-          title='下一章' />
+            onPress={e => this.handleGotoArticle(index + 1)}
+            title='下一章' />
         );
       }
-      if(this.props.directory.get(index-1)){
-        beforeBTN=(
+      if (this.props.directory.get(index - 1)) {
+        beforeBTN = (
           <Button
-          onPress={e=>this.handleGotoArticle(index-1)}
-          title='上一章' />
+            onPress={e => this.handleGotoArticle(index - 1)}
+            title='上一章' />
         );
       }
       let btns = (<View style={{
-        flex:1,
-        flexDirection:"row",
+        flex: 1,
+        flexDirection: "row",
         justifyContent: 'space-between',
-        height:80
+        height: 80
       }}>
         {beforeBTN}
         {nextBTN}
       </View>)
       rows.push(btns);
-      
+
       let title = (
         <Text style={{
-          fontSize:this.state.fontSize+10,
-          lineHeight:this.state.fontSize+15,
-          fontWeight:'300'
-        }}>{article.get('title')+"\n"}</Text>
+          fontSize: this.state.fontSize + 10,
+          lineHeight: this.state.fontSize + 15,
+          fontWeight: '300'
+        }}>{article.get('title') + "\n"}</Text>
       );
       rows.unshift(title);
       rows.unshift(btns);
-      
-      this._isMounted&&this.setState({
-        fetching:false,
+
+      this._isMounted && this.setState({
+        fetching: false,
         dataSource: ds.cloneWithRows(rows),
         index
       });
-    }).catch((e)=>{
-      console.log(e);
-    }).done(()=>{
+    }).done(() => {
       //load more data
       for (var i = 1; i <= 5; i++) {
-        if(this.props.directory.get(index+i)){
-          parseArticleContent(this.props.novel.directoryUrl,this.props.directory.getIn([index+i,'url'])).catch(e=>{
+        if (this.props.directory.get(index + i)) {
+          parseArticleContent(this.props.novel.directoryUrl, this.props.directory.getIn([index + i, 'url'])).catch(e => {
             console.log(e);
           });
         }
       }
     });
-    
-    
+
+
   }
-  
+
   componentDidMount() {
     this.fetchContent(this.state.index);
   }
-  
-  handleGotoArticle = (index:number)=>{
+
+  handleGotoArticle = (index: number) => {
     this.props.updateLastRead(index);
     this.fetchContent(index);;
   }
   lastContentOffsetY = 0;
-  handleScroll=(e:Event)=>{
-    if(e.nativeEvent.contentOffset.y>100){
-      if(this.state.maxContentLength>0 
-        
+  handleScroll = (e: Event) => {
+    if (e.nativeEvent.contentOffset.y > 100) {
+      if (this.state.maxContentLength > 0
+
         &&
-        (e.nativeEvent.contentOffset.y>this.state.maxContentLength
-        || this.state.maxContentLength - e.nativeEvent.contentOffset.y <200
+        (e.nativeEvent.contentOffset.y > this.state.maxContentLength
+          || this.state.maxContentLength - e.nativeEvent.contentOffset.y < 200
         )
-      ){
-      }else{
+      ) {
+      } else {
         let difference = e.nativeEvent.contentOffset.y - this.lastContentOffsetY;
-        if(difference>0){
-          if(this.state.navMargin>-64){
-            let val = this.state.navMargin-difference<-64?-64:this.state.navMargin-difference;
+        if (difference > 0) {
+          if (this.state.navMargin > -64) {
+            let val = this.state.navMargin - difference < -64 ? -64 : this.state.navMargin - difference;
             this.setState({
-              navMargin:val
+              navMargin: val
             });
           }
-        }else{
-          if(this.state.navMargin!=0){
-            let val = this.state.navMargin-difference>0?0:this.state.navMargin-difference;
+        } else {
+          if (this.state.navMargin != 0) {
+            let val = this.state.navMargin - difference > 0 ? 0 : this.state.navMargin - difference;
             this.setState({
-              navMargin:val
+              navMargin: val
             });
           }
         }
       }
     }
-    
+
     this.lastContentOffsetY = e.nativeEvent.contentOffset.y;
   }
-  handleEndReached= (e)=>{
+  handleEndReached = (e) => {
     this.setState({
-      navMargin:0,
-      maxContentLength:this.lastContentOffsetY
+      navMargin: 0,
+      maxContentLength: this.lastContentOffsetY
     });
   }
 
-  
+
   render() {
     let current = this.props.directory.get(this.state.index);
     if (current) {
-      
+
       let content;
       if (this.state.fetching) {
-        content =  <View style={{
-          flex:1,
-          alignSelf:'center',
-          justifyContent:'center',
+        content = <View style={{
+          flex: 1,
+          alignSelf: 'center',
+          justifyContent: 'center',
         }} ><Spinner
-        size={100}
-        type="Pulse"
-        color="gray"
-        />
+            size={100}
+            type="Pulse"
+            color="gray"
+            />
         </View>;
-      }else{
+      } else {
         let style = {
-          fontSize:this.state.fontSize,
-          height:Math.ceil(this.state.fontSize*1.35),
-          lineHeight:Math.ceil(this.state.fontSize*1.35),
-          fontWeight:'300'
+          fontSize: this.state.fontSize,
+          height: Math.ceil(this.state.fontSize * 1.35),
+          lineHeight: Math.ceil(this.state.fontSize * 1.35),
+          fontWeight: '300'
         };
         var {height, width} = Dimensions.get('window');
         //将内容分成多个数组来显示
         content = <ListView
           style={{
-            height:height,
-            paddingTop:10,
-            paddingLeft:this.state.fontSize-10,
+            height: height,
+            paddingTop: 10,
+            paddingLeft: this.state.fontSize - 10,
           }}
-          renderFooter={()=>{
+          renderFooter={() => {
             return <View style={{
-              height:100
+              height: 100
             }} />
-          }}
+          } }
           onScroll={this.handleScroll.bind(this)}
           onEndReached={this.handleEndReached.bind(this)}
           initialListSize={40}
@@ -228,60 +228,60 @@ class Reader extends React.Component {
           scrollRenderAheadDistance={500}
           dataSource={this.state.dataSource}
           renderRow={(rowData) => {
-            if(typeof(rowData) == "string"){
+            if (typeof (rowData) == "string") {
               return <Text style={style}>{rowData}</Text>;
-            }else{
+            } else {
               return rowData;
             }
-            
-            
-          }}
-        />
+
+
+          } }
+          />
       }
 
       return (
-        <Container 
-        type="scroll"
-        style={{
-          backgroundColor:'#9FB2A1'
-        }}>
-        <Navbar
-        title={current.get('title')}
-        left={{
-          icon: "ios-arrow-back",
-          label: "返回",
-          onPress: Actions.pop
-        }}
-        right={{
-          label: "刷新",
-          onPress: e=>{
-            this.fetchContent(this.state.index,true);
-          }
-        }}
-        style={{
-          marginTop:this.state.navMargin
-        }}
-        />
+        <Container
+          type="scroll"
+          style={{
+            backgroundColor: '#9FB2A1'
+          }}>
+          <Navbar
+            title={current.get('title')}
+            left={{
+              icon: "ios-arrow-back",
+              label: "返回",
+              onPress: Actions.pop
+            }}
+            right={{
+              label: "刷新",
+              onPress: e => {
+                this.fetchContent(this.state.index, true);
+              }
+            }}
+            style={{
+              marginTop: this.state.navMargin
+            }}
+            />
           {content}
         </Container>
       );
-    }else{
+    } else {
       return (
         <Container>
-        <Navbar
-        title="没有下一章了"
-        left={{
-          icon: "ios-arrow-back",
-          label: "返回",
-          onPress: Actions.pop
-        }}
-        />
-        <Text>没有更多内容了</Text>
+          <Navbar
+            title="没有下一章了"
+            left={{
+              icon: "ios-arrow-back",
+              label: "返回",
+              onPress: Actions.pop
+            }}
+            />
+          <Text>没有更多内容了</Text>
         </Container>
       );
     }
   }
-  
+
   _isMounted = true;
   componentWillUnmount() {
     this._isMounted = false;
@@ -305,34 +305,43 @@ export default connect(
 )(Reader);
 
 
-function parseLine(str,width,cleanEmptyLine = true){
-    str.replace("\t",'  ');
-    var lines = [];
-    var currentLine = '';
-    var currentLineWidth = 0;
-    for(var s of str){
-        let code = s.charCodeAt();
-        if (code == 10 || code == 13) {
-            if (currentLine.trim()=='' && lines.length>1 && lines[lines.length-1].trim() == '') {
-              //过滤空行
-            }else{
-              lines.push(currentLine);
-            }
-            currentLine = '';
-            currentLineWidth = 0;
-            continue;
-        }
+function parseLine(str, width, cleanEmptyLine = true) {
+  if (!str || str == '') {
+    return [];
+  }
+  str.replace("\t", '  ');
+  let lines = [];
+  let currentLine = '';
+  let currentLineWidth = 0;
+  for (let i in str) {
+    try {
+      let s = str[i];
+      let code = s.charCodeAt();
 
-        var sWidth = stringWidth(s);
-        if (currentLineWidth+sWidth>width) {
-            lines.push(currentLine);
-            currentLine = '';
-            currentLineWidth = 0;
+      if (code == 10 || code == 13) {
+        if (currentLine.trim() == '' && lines.length > 1 && lines[lines.length - 1].trim() == '') {
+          //过滤空行
+        } else {
+          lines.push(currentLine);
         }
+        currentLine = '';
+        currentLineWidth = 0;
+        continue;
+      }
 
-        currentLine += s;
-        currentLineWidth += sWidth;
+      var sWidth = stringWidth(s);
+      if (currentLineWidth + sWidth > width) {
+        lines.push(currentLine);
+        currentLine = '';
+        currentLineWidth = 0;
+      }
+
+      currentLine += s;
+      currentLineWidth += sWidth;
+    } catch (error) {
+      console.log(error);
     }
+  }
 
-    return lines;
+  return lines;
 }
