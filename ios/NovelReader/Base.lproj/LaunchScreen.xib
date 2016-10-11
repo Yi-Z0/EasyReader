@@ -18,16 +18,16 @@
                         <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="易读小说" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yV8-Tx-lE0">
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="40"/>
                             <textInputTraits key="textInputTraits"/>
                         </textField>
                     </subviews>
                     <color key="backgroundColor" red="0.81321060657501221" green="0.029217306524515152" blue="0.028076827526092529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstItem="yV8-Tx-lE0" firstAttribute="centerX" secondItem="eTc-VS-FMc" secondAttribute="centerX" id="Vvz-xt-1sg"/>
-                        <constraint firstAttribute="trailing" secondItem="O2b-tn-01l" secondAttribute="trailing" constant="100" id="ctz-2T-t6d"/>
+                        <constraint firstAttribute="trailing" secondItem="O2b-tn-01l" secondAttribute="trailing" constant="50" id="ctz-2T-t6d"/>
                         <constraint firstItem="O2b-tn-01l" firstAttribute="centerY" secondItem="eTc-VS-FMc" secondAttribute="centerY" id="do7-Nh-3P5"/>
-                        <constraint firstItem="O2b-tn-01l" firstAttribute="leading" secondItem="eTc-VS-FMc" secondAttribute="leading" constant="100" id="iwd-8d-Vhb"/>
+                        <constraint firstItem="O2b-tn-01l" firstAttribute="leading" secondItem="eTc-VS-FMc" secondAttribute="leading" constant="50" id="iwd-8d-Vhb"/>
                         <constraint firstAttribute="bottom" secondItem="yV8-Tx-lE0" secondAttribute="bottom" constant="100" id="oGM-cR-BeZ"/>
                     </constraints>
                 </view>
