@@ -8,18 +8,6 @@ var config = {
         "scale" : "1x"
       },
       {
-        "size" : "38x38",
-        "idiom" : "iphone",
-        "filename" : "38x38.png",
-        "scale" : "2x"
-      },
-      {
-        "size" : "42x42",
-        "idiom" : "iphone",
-        "filename" : "42x42.png",
-        "scale" : "2x"
-      },
-      {
         "size" : "29x29",
         "idiom" : "iphone",
         "filename" : "-Small@2x.png",

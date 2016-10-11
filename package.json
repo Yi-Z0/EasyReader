@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "build": "cd ./android && ./gradlew assembleRelease && cd ..",
-    "icon": "mobile-icon-resizer -i ./icon/icon.png --iosprefix=\"Icon\" --iosof=./icon/output/ios --androidof=./icon/output/android --config=./icon/config.js"
+    "icon": "mobile-icon-resizer -i ./icon/icon.png --iosprefix=\"\" --iosof=./icon/output/ios --androidof=./icon/output/android --config=./icon/config.js"
   },
   "dependencies": {
     "buffer": "^5.0.0",
