@@ -2,7 +2,9 @@ package com.yihom.novel;
 
 import com.facebook.react.ReactActivity;
 import com.react.rnspinkit.RNSpinkitPackage;
+
 import com.baidu.mobstat.StatService;
+import com.baidu.mobstat.SendStrategyEnum;
 
 public class MainActivity extends ReactActivity {
 
