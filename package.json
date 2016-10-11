@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "build": "cd ./android && ./gradlew assembleRelease && cd .."
+    "build": "cd ./android && ./gradlew assembleRelease && cd ..",
+    "icon": "mobile-icon-resizer -i ./icon/icon.png --iosprefix=\"Icon\" --iosof=./icon/output/ios --androidof=./icon/output/android --config=./icon/config.js"
   },
   "dependencies": {
     "buffer": "^5.0.0",
@@ -33,6 +34,7 @@
     "url-parse": "^1.1.4"
   },
   "devDependencies": {
+    "mobile-icon-resizer": "^1.0.0",
     "remote-redux-devtools": "^0.5.0"
   }
 }

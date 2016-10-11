@@ -17,10 +17,10 @@ class List extends React.Component {
     return (
       <ListView
         enableEmptySections={true}
-        initialListSize={20}
-        pageSize={20}
+        initialListSize={200}
+        pageSize={200}
         onEndReachedThreshold={0}
-        scrollRenderAheadDistance={100}
+        scrollRenderAheadDistance={1000}
         ref={this.props.scrollRef}
         dataSource={ds.cloneWithRows(this.props.items.toArray())}
         renderRow={(rowData,_,rowID)=><Item onPress={this.props.handleClickArticle.bind(null,rowData,rowID)} item={rowData}/>}
