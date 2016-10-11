@@ -1,5 +1,4 @@
 //@flow
-import {getArticlesFromUrl} from '../parser';
 
 export default class Novel {
   static schema = {
@@ -14,6 +13,7 @@ export default class Novel {
       author: 'string',
       desc:'string', //描述内容
       star:{type: 'bool', default: false},
+      active:{type: 'bool', default: true},
       created:'date',
       starAt:{type: 'date', default: new Date()},
       lastReadIndex:{type: 'int', default: 0},

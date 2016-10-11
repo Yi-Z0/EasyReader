@@ -13,7 +13,8 @@ import { SwipeRow } from 'react-native-swipe-list-view';
 let styles = StyleSheet.create({
   rowItem: {
     padding:10,
-    backgroundColor:'#ffffff'
+    backgroundColor:'#ffffff',
+    height:100,
   },
   rowTitle: {
     fontSize:24,
@@ -27,11 +28,14 @@ let styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 15,
-    backgroundColor:'red',
+    height:100,
   },
   deleteBtn:{
     color:"#ffffff",
-    padding:10
+    padding:10,
+    lineHeight:100,
+    backgroundColor:'red',
+    marginRight:-20
   }
 });
 
@@ -41,6 +45,11 @@ let styleSwipeRow = {
 };
 
 class Row extends Component {
+    props:{
+        onDelete:func,
+        onPress:func,
+        novel:Novel
+    };
     constructor(props) {
       super(props);
     
@@ -55,8 +64,6 @@ class Row extends Component {
         return true;
       }
       if (
-        nextProps.novel.isValid()
-        &&
         nextProps.novel.directoryUrl == this.props.novel.directoryUrl
         &&
         nextProps.novel.lastReadIndex == this.lastRenderParams.lastReadIndex
@@ -70,15 +77,14 @@ class Row extends Component {
 
       return true;
     }
-    props:{
-        onDelete:func,
-        onPress:func,
-        novel:Novel
-    };
 
 
   lastRenderParams = {};
   render() {
+    if (this.state.hide) {
+        return <View/>
+    }
+
     this.lastRenderParams.lastReadIndex = this.props.novel.lastReadIndex
     this.lastRenderParams.lastArticleTitle = this.props.novel.lastArticleTitle
 
@@ -105,9 +111,7 @@ class Row extends Component {
     let style = {
         opacity:this.state.fadeInOpacity
     };
-    if (this.state.hide) {
-        style.height = 0;
-    }
+    
     return (
         <Animated.View style={style}>
       <SwipeRow

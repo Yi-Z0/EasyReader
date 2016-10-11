@@ -45,13 +45,15 @@ class Bookshelf extends React.Component {
     InteractionManager.runAfterInteractions(()=>{
       let realm = realmFactory();
       realm.write(()=>{
+        
+        novel.active=false;
         let directoryUrl = novel.directoryUrl;
-        realm.delete(novel);
-
         let allArticles = realm.objects('Article').filtered(`directoryUrl="${directoryUrl}"`)
         realm.delete(allArticles); // Deletes all articles
+
       });
-    })
+
+    });
 
   }
   renderRow = (novel:Novel,sectionID,rowID)=>{

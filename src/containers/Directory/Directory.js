@@ -9,7 +9,6 @@ import { bindActionCreators } from 'redux';
 
 
 import {fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
-import {getArticlesFromUrl} from '../../parser';
 import List from './Components/List';
 
 class Directory extends React.Component {

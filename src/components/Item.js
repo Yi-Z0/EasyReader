@@ -30,6 +30,7 @@ class Item extends React.Component {
         });
       }else{
         novel = novels[0];
+        novel.active=true;
       }
       //save novel to realm and redirect when save success
 

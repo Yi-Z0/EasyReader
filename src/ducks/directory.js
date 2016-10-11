@@ -40,7 +40,11 @@ export const fetchListFromNetwork = (novel:Novel,callback:func)=>{
           dispatch(fetchListSuccess({directory,lastReadIndex:novel.lastReadIndex}));
         }
       });
-    }).catch(e=>alert(e));
+    }).catch(
+      e=>{
+        console.error(e);
+      }
+    );
   };
 };
 
