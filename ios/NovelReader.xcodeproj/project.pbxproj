@@ -22,6 +22,17 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		1A349BDA1DAD30FA002BEFEB /* libBaiduMobStat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BD91DAD30FA002BEFEB /* libBaiduMobStat.a */; };
+		1A349BEA1DAD3159002BEFEB /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BE91DAD3159002BEFEB /* JavaScriptCore.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		1A349BEC1DAD3161002BEFEB /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BEB1DAD3161002BEFEB /* Security.framework */; };
+		1A349BEE1DAD3169002BEFEB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BED1DAD3169002BEFEB /* CoreLocation.framework */; };
+		1A349BF01DAD3172002BEFEB /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BEF1DAD3172002BEFEB /* SystemConfiguration.framework */; };
+		1A349BF21DAD317E002BEFEB /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BF11DAD317E002BEFEB /* CoreTelephony.framework */; };
+		1A349BF41DAD3185002BEFEB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BF31DAD3185002BEFEB /* CoreGraphics.framework */; };
+		1A349BF61DAD318B002BEFEB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BF51DAD318B002BEFEB /* UIKit.framework */; };
+		1A349BF81DAD3198002BEFEB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BF71DAD3198002BEFEB /* Foundation.framework */; };
+		1A349BFA1DAD31A6002BEFEB /* libz.1.2.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BF91DAD31A6002BEFEB /* libz.1.2.5.tbd */; };
+		1A349BFC1DAD31B0002BEFEB /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A349BFB1DAD31B0002BEFEB /* libstdc++.tbd */; };
 		2EA5FADE990B41F9B432EEF8 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3650FC91517C43AB9CF8105E /* MaterialIcons.ttf */; };
 		30E146F45D73409C9FE4543E /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F33AA912917F4B7D9BD34685 /* Ionicons.ttf */; };
 		3843CA51F536435393E32688 /* libRNSpinkit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ACD73DE1A9AB4F44B812378A /* libRNSpinkit.a */; };
@@ -167,6 +178,18 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = NovelReader/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = NovelReader/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		1A349BD81DAD30FA002BEFEB /* BaiduMobStat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaiduMobStat.h; sourceTree = "<group>"; };
+		1A349BD91DAD30FA002BEFEB /* libBaiduMobStat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libBaiduMobStat.a; sourceTree = "<group>"; };
+		1A349BE91DAD3159002BEFEB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		1A349BEB1DAD3161002BEFEB /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		1A349BED1DAD3169002BEFEB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		1A349BEF1DAD3172002BEFEB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		1A349BF11DAD317E002BEFEB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		1A349BF31DAD3185002BEFEB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		1A349BF51DAD318B002BEFEB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		1A349BF71DAD3198002BEFEB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1A349BF91DAD31A6002BEFEB /* libz.1.2.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.5.tbd; path = usr/lib/libz.1.2.5.tbd; sourceTree = SDKROOT; };
+		1A349BFB1DAD31B0002BEFEB /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		1D0F101F9E6744A292C279DC /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		3650FC91517C43AB9CF8105E /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		3CE17C59B05346FB8E80CC75 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
@@ -202,6 +225,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A349BFC1DAD31B0002BEFEB /* libstdc++.tbd in Frameworks */,
+				1A349BFA1DAD31A6002BEFEB /* libz.1.2.5.tbd in Frameworks */,
+				1A349BF81DAD3198002BEFEB /* Foundation.framework in Frameworks */,
+				1A349BF61DAD318B002BEFEB /* UIKit.framework in Frameworks */,
+				1A349BF41DAD3185002BEFEB /* CoreGraphics.framework in Frameworks */,
+				1A349BF21DAD317E002BEFEB /* CoreTelephony.framework in Frameworks */,
+				1A349BF01DAD3172002BEFEB /* SystemConfiguration.framework in Frameworks */,
+				1A349BEE1DAD3169002BEFEB /* CoreLocation.framework in Frameworks */,
+				1A349BEC1DAD3161002BEFEB /* Security.framework in Frameworks */,
+				1A349BEA1DAD3159002BEFEB /* JavaScriptCore.framework in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -209,6 +242,7 @@
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
+				1A349BDA1DAD30FA002BEFEB /* libBaiduMobStat.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
@@ -335,6 +369,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1A349BD71DAD30FA002BEFEB /* baidustats */ = {
+			isa = PBXGroup;
+			children = (
+				1A349BD81DAD30FA002BEFEB /* BaiduMobStat.h */,
+				1A349BD91DAD30FA002BEFEB /* libBaiduMobStat.a */,
+			);
+			name = baidustats;
+			path = "universal-bin";
+			sourceTree = "<group>";
+		};
 		1A7372CD1D9AA44200E0A9ED /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -391,6 +435,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				1A349BD71DAD30FA002BEFEB /* baidustats */,
 				13B07FAE1A68108700A75B9A /* NovelReader */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* NovelReaderTests */,
@@ -429,6 +474,16 @@
 		F5ACD77EFB894DAF9DBCD130 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1A349BFB1DAD31B0002BEFEB /* libstdc++.tbd */,
+				1A349BF91DAD31A6002BEFEB /* libz.1.2.5.tbd */,
+				1A349BF71DAD3198002BEFEB /* Foundation.framework */,
+				1A349BF51DAD318B002BEFEB /* UIKit.framework */,
+				1A349BF31DAD3185002BEFEB /* CoreGraphics.framework */,
+				1A349BF11DAD317E002BEFEB /* CoreTelephony.framework */,
+				1A349BEF1DAD3172002BEFEB /* SystemConfiguration.framework */,
+				1A349BED1DAD3169002BEFEB /* CoreLocation.framework */,
+				1A349BEB1DAD3161002BEFEB /* Security.framework */,
+				1A349BE91DAD3159002BEFEB /* JavaScriptCore.framework */,
 				7CA551624A604C0E9E3F0E14 /* libc++.tbd */,
 				F866BE6FDDBF4E4C852C9114 /* libz.tbd */,
 			);
@@ -810,6 +865,10 @@
 				);
 				INFOPLIST_FILE = NovelReader/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/universal-bin",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -838,6 +897,10 @@
 				);
 				INFOPLIST_FILE = NovelReader/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/universal-bin",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

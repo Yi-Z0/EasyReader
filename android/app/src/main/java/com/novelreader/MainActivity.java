@@ -2,6 +2,7 @@ package com.yihom.novel;
 
 import com.facebook.react.ReactActivity;
 import com.react.rnspinkit.RNSpinkitPackage;
+import com.baidu.mobstat.StatService;
 
 public class MainActivity extends ReactActivity {
 
@@ -12,5 +13,10 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "NovelReader";
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        StatService.setSendLogStrategy(this, SendStrategyEnum.APP_START, 1, false);
     }
 }
