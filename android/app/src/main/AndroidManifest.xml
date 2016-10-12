@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yihom.novel"
     android:versionCode="1"
-    android:versionName="1.0">
+    android:versionName="1.1.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
@@ -36,7 +36,7 @@
         <!-- 渠道商编号 -->
         <meta-data
             android:name="BaiduMobAd_CHANNEL"
-            android:value="Common" />
+            android:value="wandoujia" />
 
         <!-- 是否开启错误日志统计，默认为false -->
         <meta-data
@@ -55,7 +55,7 @@
         <!-- 是否获取基站位置信息 ,默认为true -->
         <meta-data
             android:name="BaiduMobAd_CELL_LOCATION"
-            android:value="true" />
+            android:value="false" />
         <!-- 是否获取GPS位置信息，默认为true -->
         <meta-data
             android:name="BaiduMobAd_GPS_LOCATION"

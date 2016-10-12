@@ -56,4 +56,9 @@
   NSLog(@"百度统计初始化完毕");
 }
 
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
+{
+  return UIInterfaceOrientationMaskPortrait;
+}
+
 @end

@@ -10,6 +10,7 @@ type Props={
   handleClickArticle:func,
   id:string,
 };
+
 class List extends React.Component {
   props: Props;
   

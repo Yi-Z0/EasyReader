@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "build": "cd ./android && ./gradlew assembleRelease && cd ..",
+    "build": "cd ./android && ./gradlew assembleRelease && cd .. && open ./android/app/build/outputs/apk",
     "icon": "mobile-icon-resizer -i ./icon/icon.png --iosprefix=\"Icon\" --iosof=./ios/NovelReader/Images.xcassets/AppIcon.appiconset --androidof=./android/app/src/main/res --config=./icon/config.js"
   },
   "dependencies": {
