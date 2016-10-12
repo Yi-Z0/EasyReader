@@ -2,6 +2,7 @@ package com.yihom.novel;
 
 import com.facebook.react.ReactActivity;
 import com.react.rnspinkit.RNSpinkitPackage;
+import android.os.Bundle;
 
 import com.baidu.mobstat.StatService;
 import com.baidu.mobstat.SendStrategyEnum;
