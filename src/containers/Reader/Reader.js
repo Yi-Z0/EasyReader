@@ -20,7 +20,7 @@ import { bindActionCreators } from 'redux';
 
 import { parseArticleContent } from '../../parser';
 import { updateLastRead } from '../../ducks/directory';
-import stringWidth from '../../utils/stringWidth';
+import parseContent from '../../utils/parseContent';
 
 //在切换页面的时候,发送通知,切换index
 type Props = {
@@ -39,6 +39,7 @@ class Reader extends React.Component {
     fontSize: number,
     lines:Array<string>,
     page:number,
+    showSetting:bool,
   };
 
   constructor(props: Props) {
@@ -47,9 +48,10 @@ class Reader extends React.Component {
       index: parseInt(props.index),
       refetch: 0,
       fetching: true,
-      fontSize: 24,
+      fontSize: 26,
       lines:[],
       page:1,
+      showSetting:false,
     };
     this.realm = realmFactory();
   }
@@ -73,7 +75,8 @@ class Reader extends React.Component {
     parseArticleContent(this.props.novel.directoryUrl, article.get('url'), refresh).then((content: string) => {
       var {height, width} = Dimensions.get('window');
       lineWidth = Math.floor((width - 40) * 2 / this.state.fontSize);
-      let lines = parseLine(content, lineWidth);
+      let lines = parseContent(content, lineWidth);
+      lines.unshift(article.get('title')+"\n");
       this._isMounted && this.setState({
         fetching: false,
         page:1,
@@ -100,7 +103,7 @@ class Reader extends React.Component {
 
   handleGotoArticle = (index: number) => {
     this.props.updateLastRead(index);
-    this.fetchContent(index);;
+    this.fetchContent(index);
   }
   
   get numbersOfLinesPerPages(){
@@ -111,15 +114,64 @@ class Reader extends React.Component {
     return Math.floor(height/lineHeight);
   }
 
-  get contentOfCurrentPage(){
+  get linesOfCurrentPage(){
     let numbersOfLinesPerPages = this.numbersOfLinesPerPages;
-    console.log(numbersOfLinesPerPages,this.state.page);
     let linesStart = (this.state.page-1)*numbersOfLinesPerPages;
-    console.log(linesStart);
-    return this.state.lines.slice(linesStart,numbersOfLinesPerPages).join("\n");
+    let content = this.state.lines.slice(linesStart,linesStart+numbersOfLinesPerPages);
+    return content;
   }
 
+  get pageCount(){
+    let numbersOfLinesPerPages = this.numbersOfLinesPerPages;
+    return Math.ceil(this.state.lines.length*1.0/this.numbersOfLinesPerPages)
+  }
+
+  handleContentClick = (e)=>{
+    console.log(e.nativeEvent);
+    if(this.state.showSetting){
+      this.setState({
+        showSetting:false
+      });
+      return ;
+    }
+    var {pageX,pageY} = e.nativeEvent;
+    var {height, width} = Dimensions.get('window');
+    if(pageY>height/3 && pageY<height*2/3 
+    && pageX>width/3 && pageX<width*2/3
+    ){
+      //show/hide navbar
+      this.setState({
+        showSetting:true
+      });
+      return ;
+    }else if(pageX<width/2){
+      if(this.state.page == 1){
+        if(this.state.index-1>0){
+          this.handleGotoArticle(this.state.index-1);
+        }
+      }else{
+        this.setState({
+          page:this.state.page-1
+        });
+      }
+      
+    }else{
+      if(this.pageCount == this.state.page){
+        if(this.state.index+1<=this.directory.length){
+          this.handleGotoArticle(this.state.index+1);
+        }
+      }else{
+        this.setState({
+          page:this.state.page+1
+        });
+      }
+    }
+
+
+    
+  }
   render() {
+    var {height, width} = Dimensions.get('window');
     let current = this.props.directory.get(this.state.index);
     if (current) {
 
@@ -131,20 +183,48 @@ class Reader extends React.Component {
           }
         }
       }else{
-        let style = {
+        let style={
           fontSize: this.state.fontSize,
-          lineHeight: Math.ceil(this.state.fontSize * 1.35),
+          lineHeight: Math.ceil(this.state.fontSize +15),
           fontWeight: '300',
-          padding:20,
-        };
-        
-        content = <View><Text style={style}>{this.contentOfCurrentPage}</Text></View>
+        },
+        content = (<View style={{
+          flex:1,
+          flexDirection:'column',
+          height,
+          width,
+          paddingHorizontal:20,
+          justifyContent:'space-between'
+        }}>
+          <View onPress={this.handleContentClick} style={{
+            paddingTop:40,
+            paddingBottom:0,
+            flexGrow:1,
+            backgroundColor:'red',
+            width,
+            height,            
+          }}>{this.linesOfCurrentPage.map((val,rowID)=>{
+            return (<Text key={rowID} style={style}>{val}</Text>);
+          })}
+          </View>
+          <Text style={{
+            height:20,
+            flexGrow:0,
+            lineHeight:20,
+            color:'gray'
+          }}>{this.state.page}/{this.pageCount}</Text>
+        </View>);
       }
       return (
-        <View
-          style={{
-            backgroundColor: '#9FB2A1'
-          }}>
+        <Container
+        type="plain"
+        style={{
+          backgroundColor: '#9FB2A1',
+          position:'absolute',
+          top:0,
+          height,
+          width
+        }}>
           <Navbar
             title={current.get('title')}
             left={{
@@ -158,9 +238,12 @@ class Reader extends React.Component {
                 this.fetchContent(this.state.index, true);
               }
             }}
+            style={{
+              marginTop:this.state.showSetting?0:-64,
+            }}
             />
           {content}
-        </View>
+        </Container>
       );
     } else {
       return (
@@ -200,45 +283,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Reader);
-
-
-function parseLine(str, width, cleanEmptyLine = true) {
-  if (!str || str == '') {
-    return [];
-  }
-  str.replace("\t", '  ');
-  let lines = [];
-  let currentLine = '';
-  let currentLineWidth = 0;
-  for (let i in str) {
-    try {
-      let s = str[i];
-      let code = s.charCodeAt();
-
-      if (code == 10 || code == 13) {
-        if (currentLine.trim() == '' && lines.length > 1 && lines[lines.length - 1].trim() == '') {
-          //过滤空行
-        } else {
-          lines.push(currentLine);
-        }
-        currentLine = '';
-        currentLineWidth = 0;
-        continue;
-      }
-
-      var sWidth = stringWidth(s);
-      if (currentLineWidth + sWidth > width) {
-        lines.push(currentLine);
-        currentLine = '';
-        currentLineWidth = 0;
-      }
-
-      currentLine += s;
-      currentLineWidth += sWidth;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  return lines;
-}

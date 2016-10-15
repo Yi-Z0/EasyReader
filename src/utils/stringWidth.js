@@ -14,6 +14,9 @@ module.exports = str => {
 	for (let i = 0; i < str.length; i++) {
 		const code = str.charCodeAt(i);
 
+		if(code == 32){
+			return 0.5;
+		}
 		// ignore control characters
 		if (code <= 0x1f || (code >= 0x7f && code <= 0x9f)) {
 			continue;
