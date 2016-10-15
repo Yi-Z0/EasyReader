@@ -76,7 +76,8 @@ class Reader extends React.Component {
       var {height, width} = Dimensions.get('window');
       lineWidth = Math.floor((width - 40) * 2 / this.state.fontSize);
       let lines = parseContent(content, lineWidth);
-      lines.unshift(article.get('title')+"\n");
+      lines.unshift("\n");
+      lines.unshift(article.get('title'));
       this._isMounted && this.setState({
         fetching: false,
         page:1,
@@ -195,23 +196,34 @@ class Reader extends React.Component {
          style={{
           flex:1,
           flexDirection:'column',
-          padding:20,
+          paddingTop:20,
+          paddingHorizontal:20,
           justifyContent:'space-between',
           width,
           height,
         }}
         >
-          <View style={{            
+          <View style={{     
+            height:height-40
           }}>{this.linesOfCurrentPage.map((val,rowID)=>{
             return (<Text key={rowID} style={style}>{val}</Text>);
           })}
           </View>
-          <Text style={{
+          <View style={{
             height:20,
-            flexGrow:0,
+            flex:1,
+            flexDirection:'row',
+            justifyContent:'space-between',
+          }}>
+          <Text style={{
+            color:'gray',
             lineHeight:20,
-            color:'gray'
-          }}>{this.state.page}/{this.pageCount}</Text>
+          }}>本章 : {this.state.page}/{this.pageCount}</Text>
+          <Text style={{
+            color:'gray',
+            lineHeight:20,
+          }}>总: {this.state.index+1}/{this.props.directory.size}</Text>
+          </View>
           </View>
         </TouchableWithoutFeedback>);
       }
