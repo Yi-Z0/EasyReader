@@ -127,7 +127,6 @@ class Reader extends React.Component {
   }
 
   handleContentClick = (e)=>{
-    console.log(e.nativeEvent);
     if(this.state.showSetting){
       this.setState({
         showSetting:false
@@ -157,7 +156,8 @@ class Reader extends React.Component {
       
     }else{
       if(this.pageCount == this.state.page){
-        if(this.state.index+1<=this.directory.length){
+        console.log(this.state.index+1,this.props.directory.size);
+        if(this.state.index+1<=this.props.directory.size){
           this.handleGotoArticle(this.state.index+1);
         }
       }else{
@@ -186,23 +186,22 @@ class Reader extends React.Component {
         let style={
           fontSize: this.state.fontSize,
           lineHeight: Math.ceil(this.state.fontSize +15),
+          height: Math.ceil(this.state.fontSize +15),
           fontWeight: '300',
-        },
-        content = (<View style={{
+        };
+        content = (<TouchableWithoutFeedback
+        onPress={this.handleContentClick} >
+        <View
+         style={{
           flex:1,
           flexDirection:'column',
-          height,
+          padding:20,
+          justifyContent:'space-between',
           width,
-          paddingHorizontal:20,
-          justifyContent:'space-between'
-        }}>
-          <View onPress={this.handleContentClick} style={{
-            paddingTop:40,
-            paddingBottom:0,
-            flexGrow:1,
-            backgroundColor:'red',
-            width,
-            height,            
+          height,
+        }}
+        >
+          <View style={{            
           }}>{this.linesOfCurrentPage.map((val,rowID)=>{
             return (<Text key={rowID} style={style}>{val}</Text>);
           })}
@@ -213,7 +212,8 @@ class Reader extends React.Component {
             lineHeight:20,
             color:'gray'
           }}>{this.state.page}/{this.pageCount}</Text>
-        </View>);
+          </View>
+        </TouchableWithoutFeedback>);
       }
       return (
         <Container
