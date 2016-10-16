@@ -20,7 +20,6 @@ import { Button } from 'react-native-elements'
 
 import Row from './Components/Row';
 import {fetch} from '../../ducks/bookshelf';
-import {fetchListFromDB} from '../../ducks/directory';
 
 let styles = StyleSheet.create({
   listTitle:{
@@ -60,7 +59,6 @@ class Bookshelf extends React.Component {
     return (<Row
       novel={novel}
       onPress={e=>{
-        this.props.fetchListFromDB(novel);
         Actions.directory({novel:novel});
       }}
       onDelete={this.deleteNovel.bind(null,novel)}
@@ -138,7 +136,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetch: bindActionCreators(fetch, dispatch),
-    fetchListFromDB: bindActionCreators(fetchListFromDB, dispatch),
   };
 };
 

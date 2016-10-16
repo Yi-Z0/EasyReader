@@ -7,16 +7,18 @@ import { Container, Navbar } from 'navbar-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-
-import {fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
-import List from './Components/List';
+import Item from './Components/Item';
+import {fetchListFromDB,fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
 
 class Directory extends React.Component {
   
+  componentWillMount() {
+    this.props.fetchListFromDB(this.props.novel);
+  }
   componentDidMount() {
     this.props.fetchListFromNetwork(this.props.novel);
-    this.scrollTo();
   }
+  
   
   handleSwitchStar = ()=>{
     realmFactory().write(()=>{
@@ -35,13 +37,15 @@ class Directory extends React.Component {
     if(this.props.params.get('order') == 'desc'){
       index = this.props.params.get('directory').size - index -1;
     }
-    
-    realmFactory().write(()=>{
-      this.props.novel.lastReadIndex = index;
-      this.props.novel.lastReadTitle = article.get('title');
-      this.props.updateLastRead(index);
-      this.forceUpdate();
+    InteractionManager.runAfterInteractions(()=>{
+      realmFactory().write(()=>{
+        this.props.novel.lastReadIndex = index;
+        this.props.novel.lastReadTitle = article.get('title');
+        this.props.updateLastRead(index);
+        this.forceUpdate();
+      });
     });
+    
     
     Actions.reader({
       novel:this.props.novel,
@@ -58,7 +62,9 @@ class Directory extends React.Component {
         index = 0;
       }
       InteractionManager.runAfterInteractions(() => {
-        this._scrollView.scrollTo({y:index*49,animated:false});
+        if(this._scrollView.scrollTo){
+          this._scrollView.scrollTo({y:index*49,animated:false});
+        }
       });
       this.lastScrollIndex = index;
     }
@@ -83,36 +89,40 @@ class Directory extends React.Component {
   
   _scrollView;
   render() {
-    let content;
+    let self = this;
     let arrowLabel = '正序';
+    let loading = false;
+    let containerParams = {};
+
     if (this.props.params.get('fetching')) {
-      content =  <View style={{
-        flex:1,
-        alignSelf:'center',
-        justifyContent:'center',
-      }} ><Spinner
-      style={{
-        marginTop:-300
-      }}
-      size={100}
-      type="Pulse"
-      color="gray"
-      />
-      </View>;
+      containerParams.loading={
+        styleContainer:{
+          marginTop:64,
+          backgroundColor:'rgba(102,102,102,.5)'
+        }
+      }
     }else{
+
       let directory = this.props.params.get('directory');
       if (this.props.params.get('order') == 'desc') {
         directory = directory.reverse();
         arrowLabel = '逆序';
       }
-
-      content = <List 
-      scrollRef={_scrollView=>this._scrollView=_scrollView} 
-      items={directory}
-      handleClickArticle={this.handleClickArticle}
-      id={this.props.novel.directoryUrl}
-      />
+      containerParams.data=directory.toArray();
     }
+
+    containerParams.row= (rowData,_,rowID)=>{
+      return <Item onPress={self.handleClickArticle.bind(null,rowData,rowID)} item={rowData}/>;
+    }
+    containerParams.type="list";
+    containerParams.enableEmptySections=true;
+    containerParams.initialListSize=100;
+    containerParams.pageSize=200;
+    containerParams.onEndReachedThreshold=0;
+    containerParams.scrollRenderAheadDistance=1000;
+    containerParams.contentRef = (_scrollView)=>{
+      this._scrollView=_scrollView
+    };
     
     let starIcon = "star-o";
     if(this.props.novel.star){
@@ -120,7 +130,7 @@ class Directory extends React.Component {
     }
     return (
       <Container
-      loading={false}
+      {...containerParams}
       >
           <Navbar
               title={this.props.novel.title}
@@ -139,7 +149,6 @@ class Directory extends React.Component {
                   onPress: this.handleSwitchOrder
               }]}
           />
-          {content}
       </Container>
     );
   }
@@ -154,6 +163,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    fetchListFromDB: bindActionCreators(fetchListFromDB, dispatch),
     fetchListFromNetwork: bindActionCreators(fetchListFromNetwork, dispatch),
     updateListOrder: bindActionCreators(updateListOrder, dispatch),
     updateLastRead: bindActionCreators(updateLastRead, dispatch),
