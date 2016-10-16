@@ -1,6 +1,7 @@
 //@flow
 import { createAction,handleActions } from 'redux-actions';
 import {getArticlesFromUrl} from '../parser';
+import {InteractionManager} from 'react-native';
 import { createReducer } from 'redux-immutablejs'
 import Immutable from 'immutable'
 
@@ -15,12 +16,14 @@ export const fetchListFromDB = (novel:Novel)=>{
     dispatch(_fetchList(novel.directoryUrl));
     
     if (novel.isParseDirectory) {
-      let directory = JSON.parse(novel.directory);
-      if(novel.lastReadIndex>directory.length/2.0){
-        dispatch(updateListOrder('desc'));
-      }
-      directory[novel.lastReadIndex].lastRead = true;
-      dispatch(fetchListSuccess({directory,lastReadIndex:novel.lastReadIndex}));
+      InteractionManager.runAfterInteractions(()=>{
+        let directory = JSON.parse(novel.directory);
+        if(novel.lastReadIndex>directory.length/2.0){
+          dispatch(updateListOrder('desc'));
+        }
+        directory[novel.lastReadIndex].lastRead = true;
+        dispatch(fetchListSuccess({directory,lastReadIndex:novel.lastReadIndex}));
+      });
     }
   };
 };

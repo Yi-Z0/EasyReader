@@ -38,6 +38,7 @@ export default function parseContent(str, width, cleanEmptyLine = true) {
       console.log(error);
     }
   }
+  lines.push(currentLine);
 
   return lines;
 }

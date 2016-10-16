@@ -21,8 +21,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { updateLastRead } from '../ducks/directory';
-import stringWidth from '../utils/stringWidth';
-
+import parseContent from '../utils/parseContent';
 //在切换页面的时候,发送通知,切换index
 type Props = {
   novel: Novel,
@@ -80,7 +79,7 @@ class Reader extends React.Component {
     parseArticleContent(this.props.novel.directoryUrl, article.get('url'), refresh).then((content: string) => {
       var {height, width} = Dimensions.get('window');
       lineWidth = Math.floor((width - this.state.fontSize) * 2 / this.state.fontSize);
-      let rows = parseLine(content, lineWidth);
+      let rows = parseContent(content, lineWidth);
       let nextBTN, beforeBTN;
       if (this.props.directory.get(index + 1)) {
         nextBTN = (
@@ -303,45 +302,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Reader);
-
-
-function parseLine(str, width, cleanEmptyLine = true) {
-  if (!str || str == '') {
-    return [];
-  }
-  str.replace("\t", '  ');
-  let lines = [];
-  let currentLine = '';
-  let currentLineWidth = 0;
-  for (let i in str) {
-    try {
-      let s = str[i];
-      let code = s.charCodeAt();
-
-      if (code == 10 || code == 13) {
-        if (currentLine.trim() == '' && lines.length > 1 && lines[lines.length - 1].trim() == '') {
-          //过滤空行
-        } else {
-          lines.push(currentLine);
-        }
-        currentLine = '';
-        currentLineWidth = 0;
-        continue;
-      }
-
-      var sWidth = stringWidth(s);
-      if (currentLineWidth + sWidth > width) {
-        lines.push(currentLine);
-        currentLine = '';
-        currentLineWidth = 0;
-      }
-
-      currentLine += s;
-      currentLineWidth += sWidth;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  return lines;
-}

@@ -8,14 +8,17 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import Item from './Components/Item';
-import {fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
+import {fetchListFromDB,fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
 
 class Directory extends React.Component {
   
+  componentWillMount() {
+    this.props.fetchListFromDB(this.props.novel);
+  }
   componentDidMount() {
     this.props.fetchListFromNetwork(this.props.novel);
-    this.scrollTo();
   }
+  
   
   handleSwitchStar = ()=>{
     realmFactory().write(()=>{
@@ -34,13 +37,15 @@ class Directory extends React.Component {
     if(this.props.params.get('order') == 'desc'){
       index = this.props.params.get('directory').size - index -1;
     }
-    
-    realmFactory().write(()=>{
-      this.props.novel.lastReadIndex = index;
-      this.props.novel.lastReadTitle = article.get('title');
-      this.props.updateLastRead(index);
-      this.forceUpdate();
+    InteractionManager.runAfterInteractions(()=>{
+      realmFactory().write(()=>{
+        this.props.novel.lastReadIndex = index;
+        this.props.novel.lastReadTitle = article.get('title');
+        this.props.updateLastRead(index);
+        this.forceUpdate();
+      });
     });
+    
     
     Actions.reader({
       novel:this.props.novel,
@@ -57,7 +62,9 @@ class Directory extends React.Component {
         index = 0;
       }
       InteractionManager.runAfterInteractions(() => {
-        this._scrollView.scrollTo({y:index*49,animated:false});
+        if(this._scrollView.scrollTo){
+          this._scrollView.scrollTo({y:index*49,animated:false});
+        }
       });
       this.lastScrollIndex = index;
     }
@@ -90,7 +97,8 @@ class Directory extends React.Component {
     if (this.props.params.get('fetching')) {
       containerParams.loading={
         styleContainer:{
-          marginTop:64
+          marginTop:64,
+          backgroundColor:'rgba(102,102,102,.5)'
         }
       }
     }else{
@@ -155,6 +163,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    fetchListFromDB: bindActionCreators(fetchListFromDB, dispatch),
     fetchListFromNetwork: bindActionCreators(fetchListFromNetwork, dispatch),
     updateListOrder: bindActionCreators(updateListOrder, dispatch),
     updateLastRead: bindActionCreators(updateLastRead, dispatch),
