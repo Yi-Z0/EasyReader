@@ -80,7 +80,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 android {
     compileSdkVersion 23
@@ -90,11 +90,12 @@ android {
         applicationId "com.yihom.novel"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.2.2"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
+        // manifestPlaceholders = [ CHANNEL_NAME:"Common"]  
     }
     splits {
         abi {
@@ -132,6 +133,21 @@ android {
             }
         }
     }
+
+    // productFlavors {  
+    //     tx {  
+    //         manifestPlaceholders = [ CHANNEL_NAME:"tx"]  
+    //     }  
+    //     "360" {  
+    //         manifestPlaceholders = [ CHANNEL_NAME:"360" ]  
+    //     }  
+    //     wandoujia {  
+    //         manifestPlaceholders = [ CHANNEL_NAME:"wandoujia" ]  
+    //     }
+    //     baidu {  
+    //         manifestPlaceholders = [ CHANNEL_NAME:"baidu" ]  
+    //     }  
+    // }
 }
 
 dependencies {
