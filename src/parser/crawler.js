@@ -1,4 +1,6 @@
 //@flow
+import {InteractionManager} from 'react-native';
+
 import fetch from 'fbjs/lib/fetch';
 import cheerio from 'cheerio';
 import parse from 'url-parse';
@@ -30,12 +32,15 @@ function doTask(domain){
   let  task = domainsTasks[domain].pop();
   if (task) {
     domainsTaskRuning[domain] = true;
-    task().then(($)=>{
-      // console.log(`${domain}任务完成`,domainsTasks[domain].length);
-      setTimeout(doTask.bind(null,domain),180);
-    }).catch((e)=>{
-      // console.log(`${domain}任务失败`,domainsTasks[domain].length,e);
-      setTimeout(doTask.bind(null,domain),180);
+
+    InteractionManager.runAfterInteractions(() => {
+      task().then(($)=>{
+        // console.log(`${domain}任务完成`,domainsTasks[domain].length);
+        setTimeout(doTask.bind(null,domain),180);
+      }).catch((e)=>{
+        // console.log(`${domain}任务失败`,domainsTasks[domain].length,e);
+        setTimeout(doTask.bind(null,domain),180);
+      });
     });
   }else{
     // console.log(`${domain}任务全部完成`);

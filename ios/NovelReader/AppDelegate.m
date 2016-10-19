@@ -11,7 +11,7 @@
 
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
-
+#import "BaiduMobStat.h"
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -32,7 +32,33 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  
+  
+  
+  
+  [self startBaiduMobileStat];
   return YES;
+}
+
+// 启动百度移动统计
+- (void)startBaiduMobileStat{
+  /*若应用是基于iOS 9系统开发，需要在程序的info.plist文件中添加一项参数配置，确保日志正常发送，配置如下：
+   NSAppTransportSecurity(NSDictionary):
+   NSAllowsArbitraryLoads(Boolen):YES
+   详情参考本Demo的BaiduMobStatSample-Info.plist文件中的配置
+   */
+  BaiduMobStat* statTracker = [BaiduMobStat defaultStat];
+  // 此处(startWithAppId之前)可以设置初始化的可选参数，具体有哪些参数，可详见BaiduMobStat.h文件，例如：
+  statTracker.shortAppVersion  = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+  statTracker.enableDebugOn = YES;
+  
+  [statTracker startWithAppId:@"3ac9aecc2a"]; // 设置您在mtj网站上添加的app的appkey,此处AppId即为应用的appKey
+  NSLog(@"百度统计初始化完毕");
+}
+
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
+{
+  return UIInterfaceOrientationMaskPortrait;
 }
 
 @end

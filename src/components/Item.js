@@ -30,6 +30,7 @@ class Item extends React.Component {
         });
       }else{
         novel = novels[0];
+        novel.active=true;
       }
       //save novel to realm and redirect when save success
 
@@ -40,9 +41,7 @@ class Item extends React.Component {
   
   render() {
     return (
-      <TouchableHighlight onPress={this.handleClick} underlayColor="#cccccc" style={{
-        paddingVertical: 5
-      }}>
+      <TouchableHighlight onPress={this.handleClick} underlayColor="#cccccc">
                 <View style={{
                     flexDirection:'row',
                     paddingTop:10,
