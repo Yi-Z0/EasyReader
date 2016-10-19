@@ -14,7 +14,7 @@
     "iconv-lite": "^0.4.13",
     "immutable": "^3.8.1",
     "is-fullwidth-code-point": "^2.0.0",
-    "navbar-native": "^1.4.9",
+    "navbar-native": "https://github.com/YouYII/navbar-native.git",
     "react": "15.3.2",
     "react-native": "0.34.0",
     "react-native-elements": "^0.6.1",
