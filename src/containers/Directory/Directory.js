@@ -1,6 +1,6 @@
 //@flow
 import React from 'react';
-import {View,InteractionManager,Dimensions} from 'react-native';
+import {View,InteractionManager,Dimensions,Platform} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
@@ -99,7 +99,7 @@ class Directory extends React.Component {
     if (this.props.params.get('fetching')) {
       containerParams.loading={
         styleContainer:{
-          marginTop:64,
+          marginTop:Platform.OS == 'ios'?64:40,
           backgroundColor:'rgba(102,102,102,.5)'
         }
       }
