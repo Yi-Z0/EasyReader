@@ -240,7 +240,7 @@ class Reader extends React.Component {
 
       return (
         <Container
-          type="scroll"
+          type="plain"
           style={{
             backgroundColor: '#9FB2A1'
           }}>
