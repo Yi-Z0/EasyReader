@@ -23,6 +23,7 @@
 # Running
 因为使用了realm 数据库, 首次运行会在 Downloading dependency: core 1.1.2 这里停留的比较久
 > npm install
+
 > react-native run-ios
 
 # Build
