@@ -21,9 +21,9 @@
 - [ ] 章节页面执行刷新
 
 # Running
-
+因为使用了realm 数据库, 首次运行会在 Downloading dependency: core 1.1.2 这里停留的比较久
 > npm install
-> #因为使用了realm 数据库, 首次运行会在 Downloading dependency: core 1.1.2 这里停留的比较久
+
 > react-native run-ios
 
 # Build
