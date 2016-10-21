@@ -16,7 +16,7 @@
 - [ ] android 体验优化
 
 # Build
->>> npm run build
+> npm run build
 
 # 声明
 本软件仅作学习用途 
