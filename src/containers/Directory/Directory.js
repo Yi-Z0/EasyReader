@@ -1,6 +1,6 @@
 //@flow
 import React from 'react';
-import {View,InteractionManager} from 'react-native';
+import {View,InteractionManager,Dimensions} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
@@ -56,13 +56,15 @@ class Directory extends React.Component {
   }
   
   lastScrollIndex = 0;
-  scrollTo=(index = this.getCurrentScrollIndex()-5)=>{
+  scrollTo=(index)=>{
     if(this._scrollView ){
       if(index<0){
         index = 0;
       }
       InteractionManager.runAfterInteractions(() => {
         if(this._scrollView.scrollTo){
+          var {height, width} = Dimensions.get('window');
+          index = index - height/49/2 + 2;
           this._scrollView.scrollTo({y:index*49,animated:false});
         }
       });
