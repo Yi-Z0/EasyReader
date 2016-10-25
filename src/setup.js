@@ -1,6 +1,8 @@
 //@flow
 import React from 'react';
-import { Scene,Router } from 'react-native-router-flux';
+import { Scene,Router,DefaultRenderer } from 'react-native-router-flux';
+import {View} from 'react-native';
+
 import {Provider,connect} from 'react-redux';
 require('./db');
 
@@ -8,6 +10,19 @@ import {Bookshelf,Search,Directory,Reader} from './containers';
 
 import store from './store';
 const RouterWithRedux = connect()(Router);
+
+var MessageBarAlert = require('react-native-message-bar').MessageBar;
+
+class MainScene extends React.Component{
+  render(){
+    const state = this.props.navigationState;
+    const children = state.children;
+    return (<View>
+      <DefaultRenderer navigationState={children[0]} onNavigate={this.props.onNavigate} />
+      <MessageBarAlert ref="alert" />
+    </View>)
+  }
+}
 
 class App extends React.Component {
   render() {

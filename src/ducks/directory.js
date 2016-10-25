@@ -84,7 +84,7 @@ export default createReducer(initialState,{
       && action.payload[action.payload.length-1].title == state.getIn(['directory',state.get('directory').size-1,'title'])
       ) {
       return state.merge({
-        fetching:false
+        fetching:false,
       });
     }else{
       return state.merge({

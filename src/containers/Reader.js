@@ -10,7 +10,6 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
-import Spinner from 'react-native-spinkit';
 import {
   Container,
   Navbar
@@ -186,19 +185,21 @@ class Reader extends React.Component {
   render() {
     let current = this.props.directory.get(this.state.index);
     if (current) {
-
+      let containerParams = {
+        type:"plain",
+        style:{
+            backgroundColor: '#9FB2A1'
+        }
+      };
       let content;
       if (this.state.fetching) {
-        content = <View style={{
-          flex: 1,
-          alignSelf: 'center',
-          justifyContent: 'center',
-        }} ><Spinner
-            size={100}
-            type="Pulse"
-            color="gray"
-            />
-        </View>;
+        containerParams.loading={
+          styleContainer:{
+            // marginTop:Platform.OS == 'ios'?64:40,
+            backgroundColor:'rgba(102,102,102,.5)'
+          },
+          coverNavbar:false
+        }
       } else {
         let style = {
           fontSize: this.state.fontSize,
@@ -240,10 +241,8 @@ class Reader extends React.Component {
 
       return (
         <Container
-          type="plain"
-          style={{
-            backgroundColor: '#9FB2A1'
-          }}>
+        {...containerParams}
+          >
           <Navbar
             title={current.get('title')}
             left={{

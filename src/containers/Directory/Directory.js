@@ -6,6 +6,7 @@ import Spinner from 'react-native-spinkit';
 import { Container, Navbar } from 'navbar-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+var MessageBarManager = require('react-native-message-bar').MessageBarManager;
 
 import Item from './Components/Item';
 import {fetchListFromDB,fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
@@ -14,9 +15,23 @@ class Directory extends React.Component {
   
   componentWillMount() {
     this.props.fetchListFromDB(this.props.novel);
+
+    // MessageBarManager.registerMessageBar(this.refs.alert);
   }
+  // componentWillUnmount() {
+  //   // Remove the alert located on this master page from the manager
+  //   MessageBarManager.unregisterMessageBar();
+  // }
   componentDidMount() {
     this.props.fetchListFromNetwork(this.props.novel);
+
+    // MessageBarManager.showAlert({
+    //   title: 'Your alert title goes here',
+    //   message: 'Your alert message goes here',
+    //   alertType: 'success',
+    //   // See Properties section for full customization
+    //   // Or check `index.ios.js` or `index.android.js` for a complete example
+    // });
   }
   
   
@@ -64,7 +79,10 @@ class Directory extends React.Component {
       InteractionManager.runAfterInteractions(() => {
         if(this._scrollView.scrollTo){
           var {height, width} = Dimensions.get('window');
-          index = index - height/49/2 + 2;
+          var rowMargin = height/49/2 - 2;
+          if (index>rowMargin) {
+            index -= rowMargin;
+          }
           this._scrollView.scrollTo({y:index*49,animated:false});
         }
       });
@@ -81,7 +99,9 @@ class Directory extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if( nextProps.params.get('lastReadIndex')!=this.props.params.get('lastReadIndex')){
+    if (nextProps.novel.directoryUrl!=this.props.novel.directoryUrl) {
+      this.props.fetchListFromDB(nextProps.novel);
+    }else if( nextProps.params.get('lastReadIndex')!=this.props.params.get('lastReadIndex')){
       let index = this.getCurrentScrollIndex(nextProps);
       if(Math.abs(index-this.lastScrollIndex)>=5){
         this.scrollTo(index);
@@ -93,16 +113,17 @@ class Directory extends React.Component {
   render() {
     let self = this;
     let arrowLabel = '正序';
-    let loading = false;
     let containerParams = {};
 
     if (this.props.params.get('fetching')) {
       containerParams.loading={
         styleContainer:{
-          marginTop:Platform.OS == 'ios'?64:40,
+          // marginTop:Platform.OS == 'ios'?64:40,
           backgroundColor:'rgba(102,102,102,.5)'
-        }
+        },
+        coverNavbar:false
       }
+      containerParams.data = [];
     }else{
 
       let directory = this.props.params.get('directory');
@@ -118,8 +139,8 @@ class Directory extends React.Component {
     }
     containerParams.type="list";
     containerParams.enableEmptySections=true;
-    containerParams.initialListSize=100;
-    containerParams.pageSize=200;
+    containerParams.initialListSize=30;
+    containerParams.pageSize=0;
     containerParams.onEndReachedThreshold=0;
     containerParams.scrollRenderAheadDistance=1000;
     containerParams.contentRef = (_scrollView)=>{
