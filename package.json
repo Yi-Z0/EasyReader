@@ -16,7 +16,7 @@
     "is-fullwidth-code-point": "^2.0.0",
     "navbar-native": "https://github.com/YouYII/navbar-native.git",
     "react": "15.3.2",
-    "react-native": "0.34.0",
+    "react-native": "^0.36.0",
     "react-native-elements": "^0.6.1",
     "react-native-fetch-blob": "^0.9.6",
     "react-native-message-bar": "^1.6.0",
