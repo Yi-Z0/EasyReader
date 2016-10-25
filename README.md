@@ -1,5 +1,5 @@
 # EasyReader
-基于React native 的开源小说阅读器
+基于React native 的开源小说阅读器 , QQ群 : 579376280
 
 # Features
 
