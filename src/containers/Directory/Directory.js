@@ -139,8 +139,8 @@ class Directory extends React.Component {
     }
     containerParams.type="list";
     containerParams.enableEmptySections=true;
-    containerParams.initialListSize=30;
-    containerParams.pageSize=0;
+    containerParams.initialListSize=100;
+    containerParams.pageSize=200;
     containerParams.onEndReachedThreshold=0;
     containerParams.scrollRenderAheadDistance=1000;
     containerParams.contentRef = (_scrollView)=>{
