@@ -17,7 +17,7 @@ const intervalId = BackgroundTimer.setInterval(() => {
     // even when app is the the background
     console.log('refresh all');
     refreshAllNovel();
-}, 60*1000);
+}, 60*60*1000);
 
 
 
