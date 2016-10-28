@@ -8,6 +8,9 @@ import {
   StyleSheet,
   ScrollView,
   InteractionManager,
+  RefreshControl,
+  Platform,
+  Dimensions,
 } from 'react-native';
 import { List,ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -16,26 +19,16 @@ import { Container, Navbar } from 'navbar-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ListView } from 'realm/react-native';
-import { Button } from 'react-native-elements'
+import { Button } from 'react-native-elements';
 
 import Row from './Components/Row';
-import {fetch} from '../../ducks/bookshelf';
-
-let styles = StyleSheet.create({
-  listTitle:{
-    fontSize:24,
-    fontWeight:'300',
-    marginTop:20,
-    marginBottom:10,
-  },
-  titleView:{
-    borderBottomWidth: 1,
-    borderColor:'#cccccc'
-  }
-});
+import {fetch,refreshAllNovel} from '../../ducks/bookshelf';
 
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 class Bookshelf extends React.Component {
+  state={
+    refreshing:false
+  }
   componentWillMount() {
     this.props.fetch();
   }
@@ -65,34 +58,10 @@ class Bookshelf extends React.Component {
       />);
   }
 
-  renderListView=(starDataSource,title)=>{
-    return (<View key={title}>
-          <View style={styles.titleView}>
-            <Text style={styles.listTitle}>{title}</Text>
-          </View>
-          <ListView
-            enableEmptySections={true}
-            dataSource={starDataSource}
-            renderRow={this.renderRow}
-          />
-        </View>)
-  }
   render() {
-    let lists = [];
-    if(this.props.starDataSource.getRowCount()){
-      lists.push(
-        this.renderListView(this.props.starDataSource,'收藏列表')
-      );
-    }
-
-    if(this.props.unstarDataSource.getRowCount()){
-      lists.push(
-        this.renderListView(this.props.unstarDataSource,'已读列表')
-      );
-    }
 
     let searchBtn;
-    if (lists.length==0) {
+    if (!this.props.starDataSource.getRowCount()) {
       searchBtn = <Button
             raised
             onPress={Actions.search}
@@ -104,7 +73,9 @@ class Bookshelf extends React.Component {
     }
 
     return (
-      <Container>
+      <Container
+      type="plain"
+      >
           <Navbar
               title="易读小说"
               right={{
@@ -117,9 +88,35 @@ class Bookshelf extends React.Component {
               }}
           />
             {searchBtn}
-          <ScrollView>
-          {lists}
-          </ScrollView>
+            <ListView
+            style={{
+              height:Dimensions.get('window').height - (Platform.OS=='ios'?64:40)
+            }}
+            
+            refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  tintColor="#666667"
+                  title="加载中..."
+                  titleColor="#666666"
+                  colors={['#666667', '#666666', '#0000ff']}
+                  progressBackgroundColor="#ffff00"
+                  onRefresh={e=>{
+                    this.setState({
+                      refreshing:true
+                    });
+                    refreshAllNovel(()=>{
+                      this.setState({
+                        refreshing:false
+                      });
+                    });
+                  }}
+                />
+              }
+              enableEmptySections={true}
+              dataSource={this.props.starDataSource}
+              renderRow={this.renderRow}
+            />
       </Container>
     );
   }

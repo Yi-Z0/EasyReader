@@ -1,9 +1,16 @@
 //@flow
 import React from 'react';
-import {View,InteractionManager,Dimensions,Platform} from 'react-native';
+import {
+  View,
+  InteractionManager,
+  Dimensions,
+  Platform,
+  Alert,
+} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import Spinner from 'react-native-spinkit';
-import { Container, Navbar } from 'navbar-native';
+import { Container,
+ Navbar } from 'navbar-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 var MessageBarManager = require('react-native-message-bar').MessageBarManager;
@@ -160,7 +167,25 @@ class Directory extends React.Component {
               left={{
                   icon: "ios-arrow-back",
                   label: "返回",
-                  onPress: Actions.pop
+                  onPress: ()=>{
+                    if (!this.props.novel.star) {
+                      Alert.alert(
+                        '提醒',
+                        '未加入收藏,是否现在加入收藏?',
+                        [
+                          {text: '不', onPress: Actions.pop, style: 'cancel'},
+                          {text: '好的', onPress: () => {
+                            this.handleSwitchStar();
+                            Actions.pop()
+                          }},
+                        ]
+                      )
+                    }else{
+                      Actions.pop()
+                    }
+                    
+                    
+                  }
               }}
               right={[{
                   icon: starIcon,
