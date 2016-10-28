@@ -79,29 +79,36 @@ class Reader extends React.Component {
       var {height, width} = Dimensions.get('window');
       lineWidth = Math.floor((width - this.state.fontSize) * 2 / this.state.fontSize);
       let rows = parseContent(content, lineWidth);
-      let nextBTN, beforeBTN;
-      if (this.props.directory.get(index + 1)) {
-        nextBTN = (
-          <Button
-            onPress={e => this.handleGotoArticle(index + 1)}
-            title='下一章' />
-        );
-      }
+      let btnArr = [];
+
       if (this.props.directory.get(index - 1)) {
-        beforeBTN = (
-          <Button
+        btnArr.push(
+          <Button key="before-article"
             onPress={e => this.handleGotoArticle(index - 1)}
             title='上一章' />
         );
       }
+        btnArr.push(
+          <Button key="back"
+            onPress={Actions.pop}
+            title='返回' />
+        );
+
+      if (this.props.directory.get(index + 1)) {
+        btnArr.push(
+          <Button key="after-article"
+            onPress={e => this.handleGotoArticle(index + 1)}
+            title='下一章' />
+        );
+      }
+      
       let btns = (<View style={{
         flex: 1,
         flexDirection: "row",
         justifyContent: 'space-between',
         height: 80
       }}>
-        {beforeBTN}
-        {nextBTN}
+        {btnArr}
       </View>)
       rows.push(btns);
 
@@ -174,12 +181,6 @@ class Reader extends React.Component {
 
     this.lastContentOffsetY = e.nativeEvent.contentOffset.y;
   }
-  handleEndReached = (e) => {
-    this.setState({
-      navMargin: 0,
-      maxContentLength: this.lastContentOffsetY
-    });
-  }
 
 
   render() {
@@ -221,7 +222,6 @@ class Reader extends React.Component {
             }} />
           } }
           onScroll={this.handleScroll.bind(this)}
-          onEndReached={this.handleEndReached.bind(this)}
           initialListSize={40}
           pageSize={40}
           onEndReachedThreshold={100}
