@@ -24,18 +24,26 @@ export const refreshAllNovel = (callback)=>{
     let novels = state.get('bookshelf').starNovels;
     let jobs = [];
     for(let novel of novels){
-      jobs.push(getArticlesFromUrl(novel.directoryUrl).then((directory:Array<Article>)=>{
-            let realm = realmFactory();
-            realm.write(()=>{
-              novel.directory = JSON.stringify(directory);
-              novel.isParseDirectory = true;
-              novel.lastArticleTitle = directory[directory.length-1].title;
-            });
-          }));
+      jobs.push(
+        getArticlesFromUrl(novel.directoryUrl).then(
+          (directory:Array<Article>)=>{
+              let realm = realmFactory();
+              realm.write(()=>{
+                novel.directory = JSON.stringify(directory);
+                novel.isParseDirectory = true;
+                novel.lastArticleTitle = directory[directory.length-1].title;
+              });
+            }
+        ).catch(e=>{
+          console.log(e,1);
+        })
+      );
     }
 
     Promise.all(jobs).then(callback).then(()=>{
       store.dispatch(fetch());
+    }).catch(e=>{
+      console.log(e,2);
     });
 };
 

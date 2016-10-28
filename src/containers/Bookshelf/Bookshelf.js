@@ -59,19 +59,7 @@ class Bookshelf extends React.Component {
   }
 
   render() {
-
-    let searchBtn;
-    if (!this.props.starDataSource.getRowCount()) {
-      searchBtn = <Button
-            raised
-            onPress={Actions.search}
-            icon={{
-              name: 'ios-search',
-              type: 'ionicon'
-            }}
-            title='输入书名,作者,主角等进行搜索' />;
-    }
-
+    
     return (
       <Container
       type="plain"
@@ -87,12 +75,29 @@ class Bookshelf extends React.Component {
                 label:" "
               }}
           />
-            {searchBtn}
             <ListView
             style={{
-              height:Dimensions.get('window').height - (Platform.OS=='ios'?64:40)
+              height:Dimensions.get('window').height - (Platform.OS=='ios'?64:40),
             }}
             
+            renderHeader={()=>{
+              if (!this.props.starDataSource.getRowCount()) {
+                  return (<Button
+                      raised
+                      onPress={Actions.search}
+                      icon={{
+                        name: 'ios-search',
+                        type: 'ionicon'
+                      }}
+                      title='输入书名,作者,主角等进行搜索' />);
+                }else{
+                  return (<View style={{
+                    height:20,
+                    borderBottomWidth: 1,
+                    borderColor:'#cccccc',
+                  }} />);
+                }
+            }}
             refreshControl={
                 <RefreshControl
                   refreshing={this.state.refreshing}
