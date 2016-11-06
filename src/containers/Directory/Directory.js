@@ -22,6 +22,14 @@ import {fetch} from '../../ducks/bookshelf';
 
 class Directory extends React.Component {
   
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      star:props.novel.star
+    };
+  }
+
   componentWillMount() {
     this.props.fetchListFromDB(this.props.novel);
 
@@ -45,10 +53,13 @@ class Directory extends React.Component {
   
   
   handleSwitchStar = ()=>{
+    let starResult = !this.state.star;
+    this.setState({
+      star:starResult
+    })
     realmFactory().write(()=>{
-      this.props.novel.star = !this.props.novel.star;
+      this.props.novel.star = starResult;
       this.props.novel.starAt = new Date();
-      this.forceUpdate();
       //fetch list
       this.props.fetchNovels();
     });
@@ -94,7 +105,7 @@ class Directory extends React.Component {
           if (index>rowMargin) {
             index -= rowMargin;
           }
-          this._scrollView.scrollTo({y:index*49,animated:false});
+          this._scrollView.getScrollResponder().scrollResponderScrollTo({y:index*49,animated:false});
         }
       });
       this.lastScrollIndex = index;
