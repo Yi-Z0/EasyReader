@@ -2,7 +2,7 @@
 import stringWidth from './stringWidth';
 
 export default function parseContent(str, width, cleanEmptyLine = true) {
-  if (!str || str == '') {
+  if (!str || str == '' || typeof(str) != 'string') {
     return [];
   }
   str = cleanContent(str);

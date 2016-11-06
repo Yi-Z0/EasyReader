@@ -18,33 +18,35 @@ export const fetch = createAction(FETCH, () => {
 
 
 export const refreshAllNovel = (callback)=>{
-  // return (dispatch:func) => {
-    let store = require('../store').default;
-    let state = store.getState();
-    let novels = state.get('bookshelf').starNovels;
-    let jobs = [];
-    for(let novel of novels){
-      jobs.push(
-        getArticlesFromUrl(novel.directoryUrl).then(
-          (directory:Array<Article>)=>{
-              let realm = realmFactory();
-              realm.write(()=>{
-                novel.directory = JSON.stringify(directory);
-                novel.isParseDirectory = true;
-                novel.lastArticleTitle = directory[directory.length-1].title;
-              });
-            }
-        ).catch(e=>{
-          console.log(e,1);
-        })
-      );
-    }
+  let realm = realmFactory();
+  let novels = realm.objects('Novel').filtered('star=true and active=true').sorted('starAt',true);
 
-    Promise.all(jobs).then(callback).then(()=>{
+  let jobs = [];
+  for(let novel of novels){
+    jobs.push(
+      getArticlesFromUrl(novel.directoryUrl).then(
+        (directory:Array<Article>)=>{
+            let realm = realmFactory();
+            realm.write(()=>{
+              novel.directory = JSON.stringify(directory);
+              novel.isParseDirectory = true;
+              novel.lastArticleTitle = directory[directory.length-1].title;
+            });
+          }
+      ).catch(e=>{
+        console.log(e,1);
+      })
+    );
+  }
+
+  Promise.all(jobs).then(callback).then(()=>{
+    let store = require('../store').default
+    if (store) {
       store.dispatch(fetch());
-    }).catch(e=>{
-      console.log(e,2);
-    });
+    }
+  }).catch(e=>{
+    console.log(e,2);
+  });
 };
 
 const initialState = {
