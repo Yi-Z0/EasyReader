@@ -20,6 +20,11 @@ const intervalId = BackgroundTimer.setInterval(() => {
 }, 60*60*1000);
 
 
+let realm = realmFactory();
+realm.write(()=>{
+  realm.delete(realm.objects('Novel').filtered(`active=false`)); // Deletes all articles
+});
+
 
 import store from './store';
 const RouterWithRedux = connect()(Router);

@@ -17,6 +17,8 @@ var MessageBarManager = require('react-native-message-bar').MessageBarManager;
 
 import Item from './Components/Item';
 import {fetchListFromDB,fetchListFromNetwork,updateListOrder,updateLastRead} from '../../ducks/directory';
+import {fetch} from '../../ducks/bookshelf';
+
 
 class Directory extends React.Component {
   
@@ -47,6 +49,8 @@ class Directory extends React.Component {
       this.props.novel.star = !this.props.novel.star;
       this.props.novel.starAt = new Date();
       this.forceUpdate();
+      //fetch list
+      this.props.fetchNovels();
     });
   }
   
@@ -215,6 +219,8 @@ const mapDispatchToProps = (dispatch) => {
     fetchListFromNetwork: bindActionCreators(fetchListFromNetwork, dispatch),
     updateListOrder: bindActionCreators(updateListOrder, dispatch),
     updateLastRead: bindActionCreators(updateLastRead, dispatch),
+    fetchNovels: bindActionCreators(fetch, dispatch),
+
   };
 };
 

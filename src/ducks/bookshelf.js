@@ -6,13 +6,13 @@ const FETCH = 'novel/bookshelf/FETCH';
 export const fetch = createAction(FETCH, () => {
   let realm = realmFactory();
   let novels = realm.objects('Novel');
-  realm.write(()=>{
-    let inactiveNovels = novels.filtered(`active=false`);
-    realm.delete(inactiveNovels); // Deletes all articles
-  });
+  novels = novels.filtered('star=true and active=true').sorted('starAt',true);
+  let starNovels = [];
+  for(var i in novels){
+      starNovels.push(novels[i]);
+  }
   return {
-    starNovels:novels.filtered('star=true and active=true').sorted('starAt',true),
-    unstarNovels:novels.filtered('star=false and active=true').sorted('created',true),
+    starNovels:starNovels
   };
 });
 
@@ -22,7 +22,8 @@ export const refreshAllNovel = (callback)=>{
   let novels = realm.objects('Novel').filtered('star=true and active=true').sorted('starAt',true);
 
   let jobs = [];
-  for(let novel of novels){
+  for(let index in novels){
+    let novel = novels[index];
     jobs.push(
       getArticlesFromUrl(novel.directoryUrl).then(
         (directory:Array<Article>)=>{
@@ -51,7 +52,6 @@ export const refreshAllNovel = (callback)=>{
 
 const initialState = {
   starNovels: [],
-  unstarNovels: [],
 }
 
 export default handleActions({
