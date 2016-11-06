@@ -19,6 +19,8 @@ export default class Novel {
       lastReadIndex:{type: 'int', default: 0},
       lastReadTitle:{type: 'string', default: ''},
       lastArticleTitle:{type: 'string', default: ''},
+      downloadCount:{type: 'int', default: 0},
+      needDownloadCount:{type: 'int', default: -1},
     }
   }
 }

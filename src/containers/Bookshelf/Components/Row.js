@@ -35,7 +35,8 @@ class Row extends Component {
         nextProps.novel.lastReadIndex == this.lastRenderParams.lastReadIndex
         &&
         nextProps.novel.lastArticleTitle == this.lastRenderParams.lastArticleTitle
-
+        &&
+        nextProps.novel.downloadCount == this.lastRenderParams.downloadCount
         ) {
         return false;
 
@@ -53,6 +54,12 @@ class Row extends Component {
     let novel = this.props.novel;
     
     let lastReadText , lastArticleText;
+    let downloadSummary = '';
+    if (novel.needDownloadCount>0) {
+      this.lastRenderParams.downloadCount = novel.downloadCount;
+      downloadSummary = `(${novel.downloadCount}/${novel.needDownloadCount})`;
+    }
+
     if(novel.lastReadTitle){
     lastReadText = (<Text
         style={styles.rowSubTitle}
@@ -74,7 +81,7 @@ class Row extends Component {
       >
         <View style={styles.rowItem}
         >
-          <Text style={styles.rowTitle}>{novel.title}</Text>
+          <Text style={styles.rowTitle}>{novel.title} {downloadSummary}</Text>
           {lastArticleText}
           {lastReadText}
           <Text 

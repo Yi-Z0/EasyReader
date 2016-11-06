@@ -1,6 +1,6 @@
 //@flow
 import { createAction,handleActions } from 'redux-actions';
-import {getArticlesFromUrl} from '../parser';
+import {getArticlesFromUrl,parseArticleContent} from '../parser';
 const FETCH = 'novel/bookshelf/FETCH';
 
 export const fetch = createAction(FETCH, () => {
@@ -16,6 +16,29 @@ export const fetch = createAction(FETCH, () => {
   };
 });
 
+
+export const downloadAllArticle = (novel:Novel)=>{
+  return (dispatch:func) => {
+    let directory = JSON.parse(novel.directory);
+    let realm = realmFactory();
+    realm.write(()=>{
+      novel.downloadCount = 0;
+      novel.needDownloadCount = directory.length - novel.lastReadIndex;
+    })
+    for (var i = novel.lastReadIndex; i < directory.length; i++) {
+      let article = directory[i];
+      parseArticleContent(novel.directoryUrl, article.url).then((d)=>{
+          console.log(`${article.title} 下载完毕`);
+          realm.write(()=>{
+            novel.downloadCount ++;
+            dispatch(fetch());
+          });
+      }).catch(e => {
+          console.log(`${article.title} 下载失败`,e);
+      });
+    }
+  };
+};
 
 export const refreshAllNovel = (callback)=>{
   let realm = realmFactory();

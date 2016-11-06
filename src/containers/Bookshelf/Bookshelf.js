@@ -24,24 +24,46 @@ import { Button } from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 import Row from './Components/Row';
-import {fetch,refreshAllNovel} from '../../ducks/bookshelf';
+import {fetch,refreshAllNovel,downloadAllArticle} from '../../ducks/bookshelf';
+const styles = StyleSheet.create({
 
-
-let swipeView = {
+  swipeView:{
     alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 15,
     height:100,
-  };
-let deleteBtn = {
-    color:"#ffffff",
+  },
+  downloadBtn:{
     padding:10,
-    lineHeight:100,
+    backgroundColor:'green',
+    right:65
+  },
+
+  deleteBtn:{
+    padding:10,
     backgroundColor:'red',
-    marginRight:-20
+    right:0
+  },
+
+  rightSwipeBtn:{
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 0,
+    width: 65,
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  swipeText:{
+    color:"#ffffff",
   }
+  
+})
+
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1.directoryUrl != r2.directoryUrl});
 
 class Bookshelf extends React.Component {
@@ -145,16 +167,32 @@ class Bookshelf extends React.Component {
               dataSource={this.props.starDataSource}
               renderRow={this.renderRow}
               renderHiddenRow={ (data, secId, rowId, rowMap) => (
-                  <View style={swipeView}>
+                  <View style={styles.swipeView}>
                     <Text></Text>
-                    <Text onPress={e=>{
-                      rowMap[`${secId}${rowId}`].closeRow();
-                      this.deleteNovel(data);
-                  }} style={deleteBtn}>删除</Text>
+                    <View style={[styles.rightSwipeBtn,styles.downloadBtn]}>
+                        <View>
+                            <Text onPress={e=>{
+                                rowMap[`${secId}${rowId}`].closeRow();
+                                this.props.downloadAllArticle(data);
+                            }} style={styles.swipeText}>
+                                下载
+                                未读
+                                章节
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={[styles.rightSwipeBtn,styles.deleteBtn]}>
+                        <View>
+                            <Text onPress={e=>{
+                                rowMap[`${secId}${rowId}`].closeRow();
+                                this.deleteNovel(data);
+                            }} style={styles.swipeText}>删除</Text>
+                        </View>
+                    </View>
                   </View>
               )}
               disableRightSwipe={true}
-              rightOpenValue={-65}
+              rightOpenValue={-130}
             />
       </Container>
     );
@@ -171,6 +209,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetch: bindActionCreators(fetch, dispatch),
+    downloadAllArticle: bindActionCreators(downloadAllArticle, dispatch),
   };
 };
 

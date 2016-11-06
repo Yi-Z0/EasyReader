@@ -8,17 +8,6 @@ require('./db');
 
 import {Bookshelf,Search,Directory,Reader} from './containers';
 
-import {refreshAllNovel} from './ducks/bookshelf';
-
-import BackgroundTimer from 'react-native-background-timer';
-
-const intervalId = BackgroundTimer.setInterval(() => {
-    // this will be executed every 200 ms
-    // even when app is the the background
-    console.log('refresh all');
-    refreshAllNovel();
-}, 60*60*1000);
-
 
 let realm = realmFactory();
 realm.write(()=>{

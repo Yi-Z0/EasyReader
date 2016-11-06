@@ -91,7 +91,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 3
-        versionName "1.2.2"
+        versionName "1.2.5"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -151,7 +151,6 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-background-timer')
     compile project(':realm')
     compile project(':react-native-fetch-blob')
     compile project(':react-native-vector-icons')
