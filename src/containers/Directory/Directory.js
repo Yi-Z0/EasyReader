@@ -202,7 +202,17 @@ class Directory extends React.Component {
                     
                   }
               }}
-              right={[{
+              right={[
+              {
+                  icon: 'location-arrow',
+                  iconFamily: "FontAwesome",
+                  iconSize: 20,
+                  onPress: ()=>{
+                    console.log(this.scrollTo,this.props.novel.lastReadIndex);
+                    this.scrollTo(this.props.novel.lastReadIndex);
+                  }
+              },
+                {
                   icon: starIcon,
                   iconFamily: "FontAwesome",
                   iconSize: 20,
