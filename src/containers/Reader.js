@@ -242,6 +242,7 @@ class Reader extends React.Component {
 
       let leftBtns = [{
         icon: "ios-arrow-back",
+        label: "返回",
         onPress: Actions.pop
       }];
 
@@ -252,7 +253,7 @@ class Reader extends React.Component {
         }
       }];
       if (this.props.needShowDir) {
-        rightBtns.push({
+        rightBtns.unshift({
           icon: "ios-list-outline",
           onPress: ()=>Actions.directory({novel:this.props.novel})
         });
