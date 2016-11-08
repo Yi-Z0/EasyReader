@@ -240,17 +240,24 @@ class Reader extends React.Component {
           />
       }
 
+      let leftBtns = [{
+        icon: "ios-arrow-back",
+        onPress: Actions.pop
+      }];
+
+      if (this.props.needShowDir) {
+        leftBtns.push({
+          icon: "ios-list-outline",
+          onPress: ()=>Actions.directory({novel:this.props.novel})
+        });
+      }
       return (
         <Container
         {...containerParams}
           >
           <Navbar
             title={current.get('title')}
-            left={{
-              icon: "ios-arrow-back",
-              label: "返回",
-              onPress: Actions.pop
-            }}
+            left={leftBtns}
             right={{
               label: "刷新",
               onPress: e => {

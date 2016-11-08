@@ -13,6 +13,7 @@ import {
   Dimensions,
   ListView
 } from 'react-native';
+import Immutable from 'immutable'
 import { List,ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Actions} from 'react-native-router-flux';
@@ -94,7 +95,20 @@ class Bookshelf extends React.Component {
     return (<Row
       novel={novel}
       onPress={e=>{
-        Actions.directory({novel:novel});
+        ////获得指定章节,若章节获取失败,则还是进去目录页面
+        if(novel.isParseDirectory){
+          let directory = JSON.parse(novel.directory);
+
+          Actions.reader({
+            novel:novel,
+            directory:Immutable.fromJS(directory),
+            index:novel.lastReadIndex,
+            needShowDir:true
+          });
+        }else{
+          Actions.directory({novel:novel});
+        }
+        
       }}
       />);
   }
