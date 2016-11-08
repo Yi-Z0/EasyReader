@@ -245,8 +245,14 @@ class Reader extends React.Component {
         onPress: Actions.pop
       }];
 
+      let rightBtns = [{
+        label: "刷新",
+        onPress: e => {
+          this.fetchContent(this.state.index, true);
+        }
+      }];
       if (this.props.needShowDir) {
-        leftBtns.push({
+        rightBtns.push({
           icon: "ios-list-outline",
           onPress: ()=>Actions.directory({novel:this.props.novel})
         });
@@ -258,12 +264,7 @@ class Reader extends React.Component {
           <Navbar
             title={current.get('title')}
             left={leftBtns}
-            right={{
-              label: "刷新",
-              onPress: e => {
-                this.fetchContent(this.state.index, true);
-              }
-            }}
+            right={rightBtns}
             style={{
               marginTop: this.state.navMargin
             }}
