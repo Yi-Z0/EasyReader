@@ -14,8 +14,8 @@ module.exports = str => {
 	for (let i = 0; i < str.length; i++) {
 		const code = str.charCodeAt(i);
 
-		if(code == 32){
-			return 0.5;
+		if (stringWidthMap[code]) {
+			return stringWidthMap[code];
 		}
 		// ignore control characters
 		if (code <= 0x1f || (code >= 0x7f && code <= 0x9f)) {
@@ -36,3 +36,10 @@ module.exports = str => {
 
 	return width;
 };
+
+
+let stringWidthMap = {
+	32:0.5,
+	8212:2,
+	8230:2,
+}

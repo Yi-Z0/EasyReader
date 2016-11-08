@@ -202,13 +202,14 @@ class Reader extends React.Component {
           coverNavbar:false
         }
       } else {
+        var {height, width} = Dimensions.get('window');
         let style = {
           fontSize: this.state.fontSize,
           height: Math.ceil(this.state.fontSize * 1.35),
           lineHeight: Math.ceil(this.state.fontSize * 1.35),
-          fontWeight: '300'
+          fontWeight: '300',
+          width:width+100,
         };
-        var {height, width} = Dimensions.get('window');
         //将内容分成多个数组来显示
         content = <ListView
           style={{

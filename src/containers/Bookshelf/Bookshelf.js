@@ -100,7 +100,14 @@ class Bookshelf extends React.Component {
   }
 
   render() {
-    
+    // let w = require('../../utils/stringWidth');
+    // return (
+    //   <View>
+    //   {['国','“国'].map((d)=>{
+    //     return (<Text>{d}      {w(d)}</Text>);
+    //   })}
+    //   </View>
+    // )
     return (
       <Container
       type="plain"
