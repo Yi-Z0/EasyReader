@@ -9,7 +9,7 @@
 - [x] 文章解析,文章预加载
 - [x] 收藏小说
 - [x] 文本阅读器,上下滚动条模式
-- [x] 文本宽度/分页计算
+- [x] 文本宽度/分页计算 [参考并且使用 https://github.com/YouYII/EasyReader/blob/master/src/containers/Reader/Reader.js 这个文件代替,默认的 Reader.js]
 - [x] 文本阅读器,左右点击翻页模式
 - [x] 收藏页下拉更新所有小说 (20161028)
 - [ ] 后台更新所有小说 (20161028)
