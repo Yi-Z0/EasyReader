@@ -1,6 +1,10 @@
 # EasyReader
 基于React native 的开源小说阅读器 , QQ群 : 579376280
 
+## 如果喜欢这个项目可以使用支付宝进行捐赠
+ ![image](https://github.com/YouYII/EasyReader/raw/master/qrcode.png)
+
+
 # 手指左右滑动翻页
 请使用slidepage分支进行打包运行测试,目前没有动画实现.
 
