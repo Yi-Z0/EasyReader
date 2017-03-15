@@ -1,6 +1,9 @@
 # EasyReader
 基于React native 的开源小说阅读器 , QQ群 : 579376280
 
+# 手指左右滑动翻页
+请使用slidepage分支进行打包运行测试,目前没有动画实现.
+
 # Features
 
 - [x] 小说站点规则解析
