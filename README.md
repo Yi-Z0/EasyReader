@@ -1,7 +1,8 @@
 # EasyReader
 基于React native 的开源小说阅读器 , QQ群 : 579376280
 
-## 如果喜欢这个项目可以使用支付宝进行捐赠
+## 支持
+如果喜欢这个项目可以使用支付宝进行捐赠 , 您的支持是我前进的动力.
  ![image](https://github.com/YouYII/EasyReader/raw/master/qrcode.png)
 
 
